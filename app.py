@@ -75,9 +75,15 @@ class AcadenceRequestHandler(BaseHTTPRequestHandler):
             return
 
         if path.startswith("/static/"):
-            filename = path.replace("/static/", "")
-            file_path = os.path.join(os.path.dirname(__file__), "static", filename)
-            ct = "text/css" if filename.endswith(".css") else ("application/javascript" if filename.endswith(".js") else "text/plain")
+            rel_path = path[len("/static/"):].lstrip("/\\")
+            file_path = os.path.join(os.path.dirname(__file__), "static", rel_path)
+            if not os.path.exists(file_path):
+                if rel_path.endswith(".css"):
+                    file_path = os.path.join(os.path.dirname(__file__), "static", "css", rel_path)
+                elif rel_path.endswith(".js"):
+                    file_path = os.path.join(os.path.dirname(__file__), "static", "js", rel_path)
+
+            ct = "text/css" if rel_path.endswith(".css") else ("application/javascript" if rel_path.endswith(".js") else "text/plain")
             self._serve_file(file_path, ct)
             return
 

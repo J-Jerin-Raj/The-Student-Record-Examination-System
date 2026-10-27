@@ -30,36 +30,51 @@ The application features **Academic Rescue Mode**, an academic triage engine tha
 ## System Architecture
 
 ```text
-DSA-MicroProj/
-├── data_structures/
-│   ├── __init__.py
-│   ├── node.py                  # Node class with data and next pointer
-│   ├── stack.py                 # Custom LIFO Stack (CO1)
-│   ├── queue.py                 # Custom FIFO Queue with front & rear pointers (CO1)
-│   └── linked_list.py           # Custom Singly Linked List (CO2)
+Acadence/
 ├── algorithms/
 │   ├── __init__.py
 │   ├── searching.py             # Manual Linear & Binary Search (CO2 & CO3)
 │   └── sorting.py               # Manual Bubble, Insertion, & Merge Sort (CO3)
-├── models.py                    # Structured dataclasses (Task, Exam, Assessment, UndoAction)
-├── database.py                  # Persistent SQLite layer with schema & demo seeder
+├── data_structures/
+│   ├── __init__.py
+│   ├── linked_list.py           # Custom Singly Linked List (CO2)
+│   ├── node.py                  # Node class with data and next pointer
+│   ├── queue.py                 # Custom FIFO Queue with front & rear pointers (CO1)
+│   └── stack.py                 # Custom LIFO Stack (CO1)
+├── database/
+│   ├── __init__.py              # Database facade & public query interface
+│   ├── connection.py            # SQLite connection manager & DB path
+│   ├── operations.py            # CRUD operations for tasks, exams, assessments, requests
+│   ├── schema.py                # Table schemas & teardown
+│   └── seed.py                  # Realistic academic demo data seeder
+├── models/
+│   ├── __init__.py              # Central package export
+│   ├── action.py                # UndoAction dataclass (LIFO Stack)
+│   ├── assessment.py            # Assessment score dataclass
+│   ├── exam.py                  # Exam dataclass
+│   ├── request.py               # AcademicRequest dataclass (FIFO Queue)
+│   ├── student.py               # Student profile dataclass
+│   └── task.py                  # Task dataclass
 ├── services/
 │   ├── __init__.py
-│   ├── priority_engine.py       # Transparent rule-based task prioritization formula
 │   ├── academic_planner.py      # Planner service with Stack Undo & daily study optimizer
+│   ├── dsa_lab.py               # Empirical benchmarking suite (CO2 & CO3)
 │   ├── exam_manager.py          # Exam service with schedule clash detector & countdown
 │   ├── performance_analyzer.py  # Averages, decline detector & target score calculator
-│   ├── rescue_mode.py           # Academic Rescue triage engine
-│   └── dsa_lab.py               # Empirical benchmarking suite
+│   ├── priority_engine.py       # Transparent rule-based task prioritization formula
+│   └── rescue_mode.py           # Academic Rescue triage engine
 ├── static/
-│   ├── style.css                # Modern responsive UI styling (dark/light modes)
-│   └── app.js                   # Client-side controller & REST API connector
+│   ├── css/
+│   │   └── style.css            # Responsive UI styling (dark & light modes)
+│   └── js/
+│       └── app.js               # Client-side controller & REST API connector
 ├── templates/
-│   └── index.html               # Single-page application shell with collapsible sidebar
+│   └── index.html               # Single-page web dashboard shell
 ├── tests/
 │   ├── __init__.py
 │   └── test_acadence.py         # 9 automated unit test suites
 ├── app.py                       # Zero-dependency full-stack server (http.server)
+├── main.py                      # Interactive ANSI terminal CLI interface
 ├── streamlit_app.py             # Optional Streamlit interface
 ├── requirements.txt             # Optional dependencies for Streamlit
 └── README.md                    # Project documentation & review guide
@@ -138,7 +153,13 @@ Open your browser at:
 http://localhost:8080
 ```
 
-### Option 2: Streamlit Interface (Optional)
+### Option 2: Interactive Terminal CLI Interface
+For a fast, menu-driven command-line experience with ANSI formatting:
+```bash
+python3 main.py
+```
+
+### Option 3: Streamlit Interface (Optional)
 If you prefer running via Streamlit:
 ```bash
 pip install -r requirements.txt
