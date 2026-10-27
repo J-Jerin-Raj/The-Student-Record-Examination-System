@@ -1,19 +1,23 @@
 # Acadence - Student Academic & Examination Assistant
 
-A comprehensive academic productivity and examination management web application built in Python. Designed to solve real student problems—eliminating missed deadlines, examination clashes, and reactive exam preparation—while implementing and evaluating 3rd-semester Data Structures and Algorithms coursework (**CO1, CO2, and CO3**).
+A modular, production-grade academic productivity and examination management web application built in Python. Designed to eliminate missed deadlines, examination clashes, and reactive exam preparation, while comprehensively demonstrating and evaluating 3rd-semester Data Structures and Algorithms coursework (**CO1, CO2, and CO3**).
+
+Runs out of the box with **zero external dependencies** using Python's standard library.
 
 ---
 
-## Problem Statement & Main Goal
+## Technical Documentation Suite (`docs/`)
 
-College students often struggle to juggle overlapping examination schedules, assignment deadlines, and vulnerable subjects. Information is typically scattered across college notices, messy spreadsheets, and chat groups, leading to cramming and preventable academic penalties.
+For complete system specifications, blueprints, and architectural deep-dives, explore the dedicated documentation suite:
 
-**Acadence** addresses this by providing an intelligent, centralized academic operations platform. It moves beyond standard CRUD student tracking by actively answering:
-1. **What needs attention right now?**
-2. **When does it need attention?**
-3. **What concrete action should the student take next?**
-
-The application features **Academic Rescue Mode**, an academic triage engine that evaluates urgency, priority, study effort, and subject performance vulnerability using deterministic, explainable rule-based scoring.
+| Document | Description |
+| :--- | :--- |
+| **[Architecture & System Design](docs/ARCHITECTURE.md)** | Multi-tier layered architecture, Mermaid sequence and component diagrams, design patterns (Memento, Facade, Strategy). |
+| **[Backend Logic & Algorithms](docs/BACKEND_LOGIC_AND_ALGORITHMS.md)** | Mathematical formulas for Priority Scoring, Crisis Index triage rules, interval collision theorem, reverse sensitivity algebra, and Big-O master tables. |
+| **[Database & Data Pipeline](docs/DATABASE_AND_DATA_PIPELINE.md)** | SQLite DDL schemas, Entity-Relationship Diagram (ERD), table constraints, relative-date dynamic seeding, and data lifecycle pipelines. |
+| **[REST API Reference Manual](docs/API_REFERENCE.md)** | Complete endpoint specifications, HTTP methods, headers, request/response JSON schemas, and status codes. |
+| **[Dependencies & Modules](docs/DEPENDENCIES_AND_MODULES.md)** | Zero-dependency philosophy, standard library module catalog, and optional visualization dependencies. |
+| **[Replication & Setup Guide](docs/REPLICATION_AND_SETUP_GUIDE.md)** | Step-by-step reconstruction blueprint to rebuild the entire repository from scratch if deleted, verification checklists, and viva Q&A defense. |
 
 ---
 
@@ -73,11 +77,19 @@ Acadence/
 ├── tests/
 │   ├── __init__.py
 │   └── test_acadence.py         # 9 automated unit test suites
+├── docs/                        # Complete technical documentation suite
+│   ├── ARCHITECTURE.md          # Multi-tier design & sequence diagrams
+│   ├── BACKEND_LOGIC_AND_ALGORITHMS.md # Formulas, triage, interval clashes, DSA
+│   ├── DATABASE_AND_DATA_PIPELINE.md   # SQLite schema, ERD, and data lifecycles
+│   ├── API_REFERENCE.md         # Comprehensive REST API manual
+│   ├── DEPENDENCIES_AND_MODULES.md     # Standard library catalog & optional UI
+│   └── REPLICATION_AND_SETUP_GUIDE.md  # Ground-up reconstruction blueprint
 ├── app.py                       # Zero-dependency full-stack server (http.server)
 ├── main.py                      # Interactive ANSI terminal CLI interface
 ├── streamlit_app.py             # Optional Streamlit interface
 ├── requirements.txt             # Optional dependencies for Streamlit
-└── README.md                    # Project documentation & review guide
+├── .gitignore                   # Comprehensive ignore rules
+└── README.md                    # Master documentation & review guide
 ```
 
 ---
@@ -85,44 +97,43 @@ Acadence/
 ## Core Application Features
 
 ### 1. Unified Academic Dashboard
-- **Next Exam Countdown**: Live real-time counter displaying days, hours, and minutes to the nearest scheduled examination.
-- **Task Health Counters**: Visual metrics for Pending, In Progress, Completed, and Overdue tasks.
-- **Schedule Clash Warning**: Immediate banner alert if overlapping examination slots are detected.
-- **"What Should I Do Next?"**: Prominent, ranked list of top urgent tasks with transparent explanations detailing why each task was prioritized.
-- **Academic Rescue Overview**: Live Crisis Score indicator (0 to 100) reflecting workload pressure.
+* **Next Exam Countdown**: Live real-time counter displaying days, hours, and minutes to the nearest scheduled examination.
+* **Task Health Counters**: Visual metrics for Pending, In Progress, Completed, and Overdue tasks.
+* **Schedule Clash Warning**: Immediate banner alert if overlapping examination slots are detected.
+* **"What Should I Do Next?"**: Prominent, ranked list of top urgent tasks with transparent explanations detailing why each task was prioritized.
+* **Academic Rescue Overview**: Live Crisis Score indicator (0 to 100) reflecting workload pressure.
 
 ### 2. Smart Academic Planner
-- Add, update, delete, and filter academic tasks by subject and status.
-- **Transparent Priority Scoring**:
-  $$\text{Task Score} = \text{Urgency (hours to deadline)} + \text{Priority Weight} + \text{Subject Vulnerability Boost} + \text{Effort Factor}$$
-- **Suggested Daily Study Schedule**: Input available study hours (e.g. 3.5 hours); the planner selects the optimal set of pending tasks fitting within the budget with clear rationale.
-- **Multi-Level Undo**: Supported via a custom LIFO Stack to reverse accidental task deletions, updates, or status changes.
+* Add, update, delete, and filter academic tasks by subject and status.
+* **Transparent Priority Scoring**:
+  $$\text{Task Score} = \text{Urgency} + \text{Priority Weight} + \text{Subject Vulnerability Boost} + \text{Effort Factor}$$
+* **Suggested Daily Study Schedule**: Input available study hours (e.g. 3.5 hours); the planner selects the optimal set of pending tasks fitting within the budget.
+* **Multi-Level Undo**: Supported via a custom LIFO Stack to reverse accidental task deletions, updates, or status changes.
 
 ### 3. Examination Management
-- Schedule exams with subject, date, time intervals, venue, revision completion progress, and syllabus.
-- **Schedule Conflict Detector**: Pairwise algorithm checking interval overlaps ($\max(s_1, s_2) < \min(e_1, e_2)$) on identical dates to prevent exam clashes.
-- **FIFO Academic Request Queue**: Linked-node queue where students submit requests (Hall tickets, Re-evaluations, Supplementary queries) processed in First-Come, First-Served order.
+* Schedule exams with subject, date, time intervals, venue, revision completion progress, and syllabus.
+* **Schedule Conflict Detector**: Pairwise algorithm checking interval overlaps ($\max(s_1, s_2) < \min(e_1, e_2)$) on identical dates to prevent exam clashes.
+* **FIFO Academic Request Queue**: Linked-node queue where students submit requests (Hall tickets, Re-evaluations, Supplementary queries) processed in First-Come, First-Served order.
 
 ### 4. Academic Performance Analyzer
-- Records scores across Quizzes, Assignments, Mid-Terms, Practicals, and Finals.
-- **Decline Detection**: Rule-based detection that flags sudden drops ($\ge 10\%$) or consecutive downward trends.
-- **Target Score Calculator**: Reverse sensitivity calculator computing the exact marks required on future assessments to achieve a desired overall average:
+* Records scores across Quizzes, Assignments, Mid-Terms, Practicals, and Finals.
+* **Decline Detection**: Rule-based detection that flags sudden drops ($\ge 10\%$) or consecutive downward trends.
+* **Target Score Calculator**: Reverse sensitivity calculator computing the exact marks required on future assessments to achieve a desired overall average:
   $$\text{Required Marks} = \frac{\text{Target Average} \times W_{\text{new}} - \sum (\text{Marks}_i \times W_i)}{W_{\text{upcoming}}}$$
-  Alerts the user if the target is already secured or mathematically unattainable ($> 100\%$).
-- **Revision Priorities**: Ranks subjects for review based on lowest average and exam proximity.
+* **Revision Priorities**: Ranks subjects for review based on lowest average and exam proximity.
 
 ### 5. Flagship: Academic Rescue Mode
 When facing multiple impending exams and backlog, Academic Rescue Mode calculates a **Crisis Index** (0 to 100) and executes triage:
-- Identifies overdue assignments and tight deadlines ($< 48$ hours).
-- Identifies subjects falling below the configurable warning threshold (default: $< 60\%$).
-- Generates the top recommended action items with clear rationale.
-- Features **One-Click Completion & Real-Time Recalculation** to recalculate priorities as tasks are finished.
+* Identifies overdue assignments and tight deadlines ($< 48$ hours).
+* Identifies subjects falling below the configurable warning threshold (default: $< 60\%$).
+* Generates the top recommended action items with clear rationale.
+* Features **One-Click Completion & Real-Time Recalculation** to recalculate priorities as tasks are finished.
 
 ### 6. Interactive DSA Performance Lab
-- Allows selecting dataset sizes ($N = 100, 500, 1000, 2500, 5000$).
-- Executes manual Linear Search, Binary Search, Bubble Sort, Insertion Sort, and Merge Sort.
-- Measures empirical wall-clock time (`time.perf_counter()`), comparison counters, and swaps/moves.
-- Compares Singly Linked List $\mathcal{O}(1)$ front insertion against Python array $\mathcal{O}(n)$ memory shifting.
+* Allows selecting dataset sizes ($N = 100, 500, 1000, 2500, 5000$).
+* Executes manual Linear Search, Binary Search, Bubble Sort, Insertion Sort, and Merge Sort.
+* Measures empirical wall-clock time (`time.perf_counter()`), comparison counters, and swaps/moves.
+* Compares Singly Linked List $\mathcal{O}(1)$ front insertion against Python array $\mathcal{O}(n)$ memory shifting.
 
 ---
 
@@ -179,49 +190,28 @@ Runs 9 test suites validating Stack, Queue, Linked List, Algorithms, Priority En
 When presenting Acadence to professors or evaluators, use this recommended flow:
 
 1. **Demonstrate the Dashboard**:
-   - Point out the **Live Countdown** to the nearest exam.
-   - Show the **Schedule Clash Alert** (demonstrating algorithmic interval collision detection).
-   - Walk through the **"What Should I Do Next?"** recommendations and explain how the transparent rule-based Priority Engine calculated the order.
+   * Point out the **Live Countdown** to the nearest exam.
+   * Show the **Schedule Clash Alert** (demonstrating algorithmic interval collision detection).
+   * Walk through the **"What Should I Do Next?"** recommendations and explain how the transparent rule-based Priority Engine calculated the order.
 
 2. **Demonstrate the Smart Academic Planner (CO1 & CO2)**:
-   - Add a new task or delete an existing task.
-   - Click the **Undo** button in the top navigation bar to demonstrate the **LIFO Stack** reverting the operation in $\mathcal{O}(1)$ time.
-   - Generate a **Daily Study Schedule** for 3.5 hours to show how the system selects tasks fitting within available time.
+   * Add a new task or delete an existing task.
+   * Click the **Undo** button in the top navigation bar to demonstrate the **LIFO Stack** reverting the operation in $\mathcal{O}(1)$ time.
+   * Generate a **Daily Study Schedule** for 3.5 hours to show how the system selects tasks fitting within available time.
 
 3. **Demonstrate Examinations & FIFO Queue (CO1)**:
-   - View the scheduled exams sorted using **Merge Sort**.
-   - Navigate to the **FIFO Academic Service Request Queue**: Enqueue a new request, then click "Process Next in Line" to show $\mathcal{O}(1)$ First-Come, First-Served dequeue processing.
+   * View the scheduled exams sorted using **Merge Sort**.
+   * Navigate to the **FIFO Academic Service Request Queue**: Enqueue a new request, then click "Process Next in Line" to show $\mathcal{O}(1)$ First-Come, First-Served dequeue processing.
 
 4. **Demonstrate Academic Performance & Target Score Calculator**:
-   - Show the subject cards and explain the **Decline Detection rule** (drop $\ge 10\%$ or negative trajectory).
-   - Open the **Target Score Calculator**: Enter a target average of $85\%$ and show how reverse sensitivity analysis calculates the exact marks required on the upcoming exam.
+   * Show the subject cards and explain the **Decline Detection rule** (drop $\ge 10\%$ or negative trajectory).
+   * Open the **Target Score Calculator**: Enter a target average of $85\%$ and show how reverse sensitivity analysis calculates the exact marks required on the upcoming exam.
 
 5. **Demonstrate Flagship Feature: Academic Rescue Mode**:
-   - Show the **Crisis Index gauge** and the top triage recommendations.
-   - Click **"Mark Completed & Recalculate"** on the top recommendation to demonstrate real-time triage recalculation.
+   * Show the **Crisis Index gauge** and the top triage recommendations.
+   * Click **"Mark Completed & Recalculate"** on the top recommendation to demonstrate real-time triage recalculation.
 
 6. **Demonstrate the DSA Performance Lab (CO2 & CO3)**:
-   - Select dataset size $N = 1000$.
-   - Run the **Search Benchmark** to compare Linear Search vs. Binary Search ($\mathcal{O}(n)$ vs $\mathcal{O}(\log n)$).
-   - Run the **Storage Benchmark** to show why Linked List front insertion ($\mathcal{O}(1)$ pointer updates) is significantly faster than Python array front insertion ($\mathcal{O}(n)$ memory shifting).
-
----
-
-## Viva Voce Preparation Q&A
-
-**Q1: How does your undo mechanism work, and why is a Stack the optimal data structure?**  
-*Answer:* Undo is implemented using the Command/Snapshot pattern on a custom LIFO Stack (`data_structures/stack.py`). Whenever a task or record is created, edited, deleted, or toggled, an inverted `UndoAction` snapshot is pushed onto the stack. When the student clicks Undo, the most recent action is popped in $\mathcal{O}(1)$ time and reversed. A Stack is mathematically optimal because undo operations must always reverse the *latest* operation first (LIFO order).
-
-**Q2: Why did you build the Queue using linked nodes rather than Python's built-in `list.pop(0)`?**  
-*Answer:* In Python, `list.pop(0)` requires shifting all subsequent $N-1$ elements in memory, causing an $\mathcal{O}(n)$ performance penalty per dequeue. Our custom queue uses linked nodes with separate `_front` and `_rear` pointers, ensuring that both `enqueue()` and `dequeue()` execute in strict $\mathcal{O}(1)$ constant time.
-
-**Q3: Why can't Binary Search be applied efficiently directly on a Singly Linked List?**  
-*Answer:* Binary search requires random access to the middle element in $\mathcal{O}(1)$ time (`arr[mid]`). In a singly linked list, elements are scattered across dynamic memory and linked via pointers; accessing node $k$ requires sequentially traversing $k$ pointer steps from `head` ($\mathcal{O}(k)$ time). This degrades binary search to $\mathcal{O}(n)$ or $\mathcal{O}(n \log n)$, defeating the logarithmic advantage. Thus, binary search is executed on contiguous array-backed storage.
-
-**Q4: How does your examination schedule conflict detection work?**  
-*Answer:* The conflict detector (`services/exam_manager.py`) checks all pairs of exams on identical dates. For exams with time intervals $[s_1, e_1]$ and $[s_2, e_2]$, an overlap exists if and only if:
-$$\max(s_1, s_2) < \min(e_1, e_2)$$
-If true, the system flags the exact clashing subjects, venues, and colliding duration.
-
-**Q5: What makes Academic Rescue Mode more than a standard to-do list?**  
-*Answer:* Standard to-do lists order tasks only by manual due dates or static tags. Academic Rescue Mode is an academic triage engine: it computes a composite Rescue Score considering deadline proximity, task priority, subject vulnerability (penalty boost if student's average in that subject is $< 60\%$), and effort feasibility. It provides clear, explainable rationale for why each task is recommended first.
+   * Select dataset size $N = 1000$.
+   * Run the **Search Benchmark** to compare Linear Search vs. Binary Search ($\mathcal{O}(n)$ vs $\mathcal{O}(\log n)$).
+   * Run the **Storage Benchmark** to show why Linked List front insertion ($\mathcal{O}(1)$ pointer updates) is significantly faster than Python array front insertion ($\mathcal{O}(n)$ memory shifting).

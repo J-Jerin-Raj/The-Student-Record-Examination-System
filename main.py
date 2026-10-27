@@ -177,13 +177,16 @@ class AcadenceCLIController:
                 status="Pending",
                 notes=notes,
             )
-            tid = self.planner.add_task(task)
-            print(f"{GREEN}[OK] Task #{tid} created successfully! (Recorded on LIFO Undo Stack){RESET}")
+            success, msg, tid = self.planner.add_task(task)
+            if success:
+                print(f"{GREEN}[OK] Task #{tid} created successfully! (Recorded on LIFO Undo Stack){RESET}")
+            else:
+                print(f"{RED}[ERROR] {msg}{RESET}")
 
         elif choice == "3":
             tid_str = input("Enter Task ID to complete: ").strip()
             if tid_str.isdigit():
-                success = self.planner.update_task_status(int(tid_str), "Completed")
+                success, msg = self.planner.toggle_status(int(tid_str), "Completed")
                 if success:
                     print(f"{GREEN}[OK] Task #{tid_str} marked as Completed! (Undo token pushed){RESET}")
                 else:
@@ -192,7 +195,7 @@ class AcadenceCLIController:
         elif choice == "4":
             tid_str = input("Enter Task ID to delete: ").strip()
             if tid_str.isdigit():
-                success = self.planner.delete_task(int(tid_str))
+                success, msg = self.planner.delete_task(int(tid_str))
                 if success:
                     print(f"{GREEN}[OK] Task #{tid_str} deleted! (Snapshot saved on Undo Stack){RESET}")
                 else:
@@ -205,20 +208,21 @@ class AcadenceCLIController:
             except ValueError:
                 h = 3.5
 
-            plan = self.planner.generate_daily_schedule(available_hours=h)
+            plan = self.planner.get_suggested_daily_schedule(available_hours=h)
             print(f"\n{BOLD}Recommended Daily Schedule for {plan['available_hours']} hours:{RESET}")
-            print(f"Scheduled: {plan['total_scheduled_hours']} hours across {len(plan['schedule'])} tasks.")
+            print(f"Scheduled: {plan['allocated_hours']} hours across {plan['selected_count']} tasks.")
 
-            headers = ["Time Slot", "Task Title", "Subject", "Duration"]
+            headers = ["Order", "Task Title", "Subject", "Duration"]
             rows = []
-            for slot in plan["schedule"]:
-                rows.append([slot["slot"], slot["task_title"], slot["subject"], f"{slot['duration_hours']}h"])
+            for idx, item in enumerate(plan["tasks"], 1):
+                t = item["task"]
+                rows.append([str(idx), t["title"], t["subject"], f"{t['estimated_effort']}h"])
             print_table(headers, rows)
 
     def undo_action(self):
         """Revert the most recent task modification using LIFO Undo Stack (CO1)."""
         print(f"\n{BOLD}=== LIFO UNDO STACK OPERATION (CO1) ==={RESET}")
-        desc = self.planner.peek_undo_description()
+        desc = self.planner.peek_undo()
         if not desc:
             print(f"{YELLOW}Undo stack is empty. No recent operations to revert.{RESET}")
             return
@@ -226,7 +230,7 @@ class AcadenceCLIController:
         print(f"Top Action on Stack: {CYAN}{desc}{RESET}")
         confirm = input("Execute undo operation? (y/n) [y]: ").strip().lower()
         if confirm in ("", "y", "yes"):
-            success, msg = self.planner.undo()
+            success, msg = self.planner.undo_last_action()
             if success:
                 print(f"{GREEN}[OK] {msg}{RESET}")
             else:
@@ -235,7 +239,7 @@ class AcadenceCLIController:
     def manage_exams(self):
         """View exams, sort schedules, and detect clashes (CO3)."""
         print(f"\n{BOLD}=== EXAMINATION MANAGEMENT & MERGE SORT (CO3) ==={RESET}")
-        exams = self.exam_mgr.get_sorted_exams(sort_by="date", algorithm="merge")
+        exams = self.exam_mgr.get_exams(sort_by="date", algorithm="merge")
 
         if not exams:
             print(f"{YELLOW}No exams found.{RESET}")
@@ -332,11 +336,11 @@ class AcadenceCLIController:
 
         print(f"\nAnalysis for Target {target_pct}%:")
         for sname in summaries["subjects"].keys():
-            calc = PerformanceAnalyzerService.calculate_target_requirement(sname, target_pct, next_exam_weightage=40.0)
+            calc = PerformanceAnalyzerService.calculate_required_score(sname, target_pct, upcoming_max_marks=100.0, upcoming_weightage=40.0)
             status_color = GREEN if calc["is_achievable"] else RED
             print(f"  • {BOLD}{sname}{RESET}: Current {calc['current_average']}%. "
-                  f"Required on Final Exam: {status_color}{calc['required_score_on_next_assessment']}%{RESET} "
-                  f"({calc['feasibility_note']})")
+                  f"Required on Final: {status_color}{calc['required_percentage']}%{RESET} "
+                  f"({calc['advice']})")
 
     def run_dsa_lab(self):
         """Run empirical benchmarking trials comparing searching, sorting, and linked lists (CO2 & CO3)."""
