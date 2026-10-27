@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Record and Examination Processing System | DSA Project</title>
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --surface: #131b26;
+      --surface-hover: #182230;
+      --border: #223043;
+      --border-focus: #388bfd;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --primary: #2f81f7;
+      --primary-hover: #1f6feb;
+      --success: #238636;
+      --success-hover: #2ea043;
+      --warning: #9e6a03;
+      --danger: #da3633;
+      --tag-bg: #1c2736;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 48px; line-height: 1.5; }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand-title { font-size: 1.15rem; font-weight: 600; color: #fff; letter-spacing: -0.2px; }
+    .brand-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .co-badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    nav {
+      display: flex;
+      gap: 4px;
+      padding: 8px 28px;
+      background: #0d131c;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+    }
+
+    nav button {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    nav button:hover { color: #fff; background: var(--surface); }
+    nav button.active {
+      color: #fff;
+      background: var(--surface-hover);
+      border-color: var(--border);
+      font-weight: 600;
+    }
+
+    .container { max-width: 1240px; margin: 20px auto; padding: 0 20px; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .card-title { font-size: 0.95rem; font-weight: 600; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-success:hover { background: var(--success-hover); }
+    .btn-warning { background: transparent; border-color: #d29922; color: #e3b341; }
+    .btn-warning:hover { background: rgba(210, 153, 34, 0.15); }
+    .btn-danger { background: transparent; border-color: #f85149; color: #f85149; }
+    .btn-danger:hover { background: rgba(248, 81, 73, 0.15); }
+    .btn-secondary { background: var(--tag-bg); border-color: var(--border); color: var(--text); }
+    .btn-secondary:hover { background: var(--surface-hover); }
+
+    /* Visualizer for Linked List */
+    .visualizer-scroll {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 14px 10px;
+      background: #090d14;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    .ll-node {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      min-width: 130px;
+      flex-shrink: 0;
+    }
+    .ll-node .id { font-weight: 600; color: var(--primary); font-size: 0.85rem; }
+    .ll-node .name { font-size: 0.78rem; color: #c9d1d9; }
+    .ll-node .pct { font-size: 0.72rem; color: #7ee787; font-weight: 500; }
+    .ll-arrow { color: var(--text-muted); font-size: 1rem; flex-shrink: 0; }
+    .ll-null {
+      background: #161b22;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border: 1px dashed var(--border);
+      flex-shrink: 0;
+    }
+
+    /* Stack Visualization */
+    .stack-container {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 6px;
+      max-width: 480px;
+      margin: 0 auto;
+      background: #090d14;
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      padding: 12px;
+      min-height: 180px;
+    }
+    .stack-item {
+      background: var(--surface);
+      border-left: 3px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+    }
+    .stack-item.top { border-left-color: #a371f7; background: #161b26; }
+
+    /* Queue Visualization */
+    .queue-track {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      background: #090d14;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      min-height: 80px;
+    }
+    .queue-item {
+      background: var(--surface);
+      border-left: 3px solid #238636;
+      padding: 8px 12px;
+      border-radius: 4px;
+      min-width: 160px;
+      flex-shrink: 0;
+      font-size: 0.82rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+    th, td {
+      padding: 9px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.84rem;
+    }
+    th {
+      background: #0d131c;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    tr:hover td { background: var(--surface-hover); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    input, select {
+      width: 100%;
+      background: #090d14;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 10px;
+      color: #fff;
+      font-size: 0.82rem;
+      margin-top: 3px;
+      margin-bottom: 10px;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--border-focus);
+    }
+
+    .metric-box {
+      background: #090d14;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+    }
+    .metric-value { font-size: 1.25rem; font-weight: 600; color: var(--primary); margin: 2px 0; }
+    .metric-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+
+    .tag-critical { color: #f85149; font-weight: 600; }
+    .tag-improve { color: #d29922; font-weight: 600; }
+    .tag-proficient { color: #58a6ff; font-weight: 600; }
+    .tag-exemplary { color: #3fb950; font-weight: 600; }
+
+    .status-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      border: 1px solid currentColor;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-title">Student Academic & Examination System</div>
+      <div class="brand-sub">
+        <span class="co-badge">CO1: Stack & Queue</span>
+        <span class="co-badge">CO2: Singly Linked List</span>
+        <span class="co-badge">CO3: Searching & Sorting</span>
+        <span class="co-badge">Novelty: What-If Simulator</span>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <button class="btn btn-warning" onclick="performUndo()" id="btnUndo">Undo Last Action</button>
+      <button class="btn btn-primary" onclick="openAddModal()">Add Student</button>
+    </div>
+  </header>
+
+  <nav>
+    <button class="active" onclick="switchTab('records', this)">Student Records (Linked List)</button>
+    <button onclick="switchTab('undo_tab', this)">Undo Stack (LIFO)</button>
+    <button onclick="switchTab('queue_tab', this)">Examination Queue (FIFO)</button>
+    <button onclick="switchTab('search_sort_tab', this)">Search & Sorting Lab</button>
+    <button onclick="switchTab('what_if_tab', this)">What-If Marks Simulator</button>
+    <button onclick="switchTab('benchmark_tab', this)">Performance Benchmarks</button>
+  </nav>
+
+  <div class="container">
+
+    <!-- TAB 1: Student Records -->
+    <div id="tab-records" class="tab-content active">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Singly Linked List Visualization (CO2)</div>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Nodes linked via next pointers</span>
+        </div>
+        <div class="visualizer-scroll" id="linkedListVisualizer">
+          <!-- Dynamic LL Nodes injected here -->
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Student Records</div>
+          <span id="studentCountBadge" style="font-size: 0.82rem; color: var(--primary);">0 records</span>
+        </div>
+        <div style="overflow-x: auto;">
+          <table id="studentsTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Dept</th>
+                <th>Sem</th>
+                <th>Marks Breakdown</th>
+                <th>Total</th>
+                <th>Percentage</th>
+                <th>Grade</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="studentsTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: Undo Stack -->
+    <div id="tab-undo_tab" class="tab-content">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="margin-bottom: 10px;">Undo Engine - LIFO Stack (CO1)</div>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">
+            Record modifications push snapshot tokens onto this stack. Calling Undo pops the most recent action in Last-In, First-Out order.
+          </p>
+          <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+            <button class="btn btn-warning" onclick="performUndo()" style="flex: 1;">Pop & Undo Top Action</button>
+            <button class="btn btn-secondary" onclick="fetchStack()">Refresh</button>
+          </div>
+          <div class="stack-container" id="stackVisualizer">
+            <!-- Injected stack frames -->
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="margin-bottom: 10px;">Stack Specifications</div>
+          <table style="margin-top: 0;">
+            <tr><td>Data Structure</td><td>Custom LIFO Stack</td></tr>
+            <tr><td>Push Operation</td><td>O(1) constant time</td></tr>
+            <tr><td>Pop Operation</td><td>O(1) constant time</td></tr>
+            <tr><td>Peek Operation</td><td>O(1) constant time</td></tr>
+            <tr><td>Capacity</td><td>100 actions (overflow protected)</td></tr>
+          </table>
+          <p style="margin-top: 14px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
+            Add or delete a student record to view the snapshot pushed to the top of the stack. Click "Undo" to revert the operation.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: Examination Queue -->
+    <div id="tab-queue_tab" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Examination Processing Queue - FIFO (CO1)</div>
+          <div>
+            <button class="btn btn-success" onclick="dequeueRequest()">Process Next in Line (Dequeue)</button>
+          </div>
+        </div>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
+          Student exam requests are serviced in First-Come, First-Served order using pointer-based enqueue and dequeue operations.
+        </p>
+
+        <div style="margin-bottom: 6px; font-size: 0.78rem; color: var(--text-muted); font-weight: 500;">
+          FRONT (Exit) &larr; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; REAR (Entry)
+        </div>
+        <div class="queue-track" id="queueVisualizer">
+          <!-- Injected Queue Elements -->
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="margin-bottom: 10px;">Submit Examination Request</div>
+          <form id="enqueueForm" onsubmit="handleEnqueue(event)">
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Student ID</label>
+            <input type="text" id="eqStudentId" placeholder="e.g. STU102" required>
+
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Activity Type</label>
+            <select id="eqActivityType">
+              <option value="Exam Registration">Exam Registration</option>
+              <option value="Hall Ticket Issuance">Hall Ticket Issuance</option>
+              <option value="Grade Re-evaluation">Grade Re-evaluation</option>
+              <option value="Supplementary Application">Supplementary Application</option>
+            </select>
+
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Details / Remarks</label>
+            <input type="text" id="eqDetails" placeholder="e.g. End-Term DSA Paper Review">
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Enqueue Request (O(1))</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="margin-bottom: 10px;">Processed Request History</div>
+          <div style="max-height: 240px; overflow-y: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Req ID</th>
+                  <th>Student</th>
+                  <th>Activity</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="processedHistoryBody">
+                <!-- Processed history -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: Search & Sort Lab -->
+    <div id="tab-search_sort_tab" class="tab-content">
+      <div class="grid-2">
+        <!-- Search Lab -->
+        <div class="card">
+          <div class="card-title" style="margin-bottom: 10px;">Search Techniques (CO2 & CO3)</div>
+          <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+            <input type="text" id="searchQuery" placeholder="Enter Student ID (e.g. STU108)" style="margin-bottom: 0;">
+            <button class="btn btn-primary" onclick="runSearchComparison()" style="white-space: nowrap;">Search</button>
+          </div>
+          <div id="searchComparisonBox" style="display: none; margin-top: 14px;">
+            <table style="margin-top: 0;">
+              <thead>
+                <tr>
+                  <th>Algorithm</th>
+                  <th>Structure</th>
+                  <th>Comparisons</th>
+                  <th>Runtime</th>
+                </tr>
+              </thead>
+              <tbody id="searchResultTableBody"></tbody>
+            </table>
+            <div id="searchStudentCard" style="margin-top: 10px; background: #090d14; padding: 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.82rem;"></div>
+          </div>
+        </div>
+
+        <!-- Sorting Lab -->
+        <div class="card">
+          <div class="card-title" style="margin-bottom: 10px;">Sorting Techniques (CO3)</div>
+          <div class="grid-3" style="margin-bottom: 10px;">
+            <div>
+              <label style="font-size: 0.72rem; color: var(--text-muted);">Algorithm</label>
+              <select id="sortAlgo">
+                <option value="merge">Merge Sort (O(n log n))</option>
+                <option value="insertion">Insertion Sort (O(n^2))</option>
+                <option value="bubble">Bubble Sort (O(n^2))</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 0.72rem; color: var(--text-muted);">Sort By</label>
+              <select id="sortBy">
+                <option value="marks">Marks (Merit)</option>
+                <option value="name">Name</option>
+                <option value="id">Student ID</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 0.72rem; color: var(--text-muted);">Order</label>
+              <select id="sortOrder">
+                <option value="desc">Descending</option>
+                <option value="asc">Ascending</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="runSort()" style="width: 100%;">Execute Sort</button>
+
+          <div id="sortMetricsBox" style="display: none; margin-top: 14px;">
+            <div class="grid-3">
+              <div class="metric-box">
+                <div class="metric-label">Runtime</div>
+                <div class="metric-value" id="mSortTime">0.00 ms</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-label">Comparisons</div>
+                <div class="metric-value" id="mSortComps">0</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-label">Operations</div>
+                <div class="metric-value" id="mSortSwaps">0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="sortedResultsCard" style="display: none;">
+        <div class="card-title" id="sortedResultsTitle">Sorted Output</div>
+        <table id="sortedTable">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Student ID</th>
+              <th>Name</th>
+              <th>Department</th>
+              <th>Percentage</th>
+              <th>Grade</th>
+            </tr>
+          </thead>
+          <tbody id="sortedTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 5: Novelty - What-If Marks Simulator -->
+    <div id="tab-what_if_tab" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">What-If Marks Simulator & Goal Planner</div>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Reverse sensitivity analysis & target planning</span>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Select Student</label>
+            <select id="whatIfStudentSelect" onchange="loadStudentDiagnosis()">
+              <!-- Options populated dynamically -->
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Target Overall Percentage (%)</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="number" id="whatIfTargetPct" min="40" max="100" value="85" style="margin-bottom: 0;">
+              <button class="btn btn-primary" onclick="calculateGoalPlan()" style="white-space: nowrap;">Calculate Plan</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Diagnosis Section -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="margin-bottom: 10px;">Subject Diagnostics</div>
+          <table style="margin-top: 0;">
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Score</th>
+                <th>Status</th>
+                <th>Headroom</th>
+              </tr>
+            </thead>
+            <tbody id="diagnosisTableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="margin-bottom: 10px;">Target Goal Plan</div>
+          <div id="goalPlanContainer">
+            <p style="color: var(--text-muted); font-size: 0.82rem;">Select a student and click "Calculate Plan" to generate target score requirements.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: Benchmarks -->
+    <div id="tab-benchmark_tab" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Algorithm & Storage Performance Benchmarks (CO2 & CO3)</div>
+          <button class="btn btn-primary" onclick="runBenchmarks()">Run Benchmarks</button>
+        </div>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">
+          Measures execution runtime and comparison operations across scaling dataset sizes.
+        </p>
+
+        <div id="benchmarkLoading" style="display: none; padding: 16px; text-align: center; color: var(--primary); font-size: 0.85rem;">
+          Running empirical benchmarks... Please wait a moment.
+        </div>
+
+        <div id="benchmarkContent" style="display: none;">
+          <div class="card" style="background: #090d14;">
+            <div class="card-title" style="font-size: 0.85rem; color: #7ee787; margin-bottom: 8px;">
+              [CO2] Storage Comparison: Singly Linked List vs Python List
+            </div>
+            <div id="bmStorageResults"></div>
+          </div>
+
+          <div class="card" style="background: #090d14;">
+            <div class="card-title" style="font-size: 0.85rem; color: var(--primary); margin-bottom: 8px;">
+              [CO3] Searching: Linear Search vs Binary Search
+            </div>
+            <div id="bmSearchingResults"></div>
+          </div>
+
+          <div class="card" style="background: #090d14;">
+            <div class="card-title" style="font-size: 0.85rem; color: #d2a8ff; margin-bottom: 8px;">
+              [CO3] Sorting: Bubble Sort vs Insertion Sort vs Merge Sort
+            </div>
+            <div id="bmSortingResults"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ADD STUDENT MODAL -->
+  <div id="addModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 100; align-items: center; justify-content: center;">
+    <div class="card" style="max-width: 440px; width: 92%; max-height: 90vh; overflow-y: auto;">
+      <div class="card-header">
+        <div class="card-title">Add Student Record</div>
+        <button onclick="closeAddModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 1rem; cursor: pointer;">Close</button>
+      </div>
+      <form onsubmit="handleAddStudent(event)">
+        <label style="font-size: 0.75rem; color: var(--text-muted);">Student ID</label>
+        <input type="text" id="addId" placeholder="e.g. STU111" required>
+
+        <label style="font-size: 0.75rem; color: var(--text-muted);">Full Name</label>
+        <input type="text" id="addName" placeholder="e.g. Rahul Sharma" required>
+
+        <div class="grid-2">
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Department</label>
+            <input type="text" id="addDept" value="CSE">
+          </div>
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Semester</label>
+            <input type="number" id="addSem" value="3">
+          </div>
+        </div>
+
+        <p style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 4px;">Subject Marks (0 - 100):</p>
+        <div class="grid-2">
+          <div><label style="font-size: 0.72rem;">DSA</label><input type="number" id="mDSA" value="85" step="0.5"></div>
+          <div><label style="font-size: 0.72rem;">WebDev</label><input type="number" id="mWeb" value="88" step="0.5"></div>
+          <div><label style="font-size: 0.72rem;">OS</label><input type="number" id="mOS" value="79" step="0.5"></div>
+          <div><label style="font-size: 0.72rem;">Maths</label><input type="number" id="mMath" value="82" step="0.5"></div>
+        </div>
+
+        <div style="display: flex; gap: 8px; margin-top: 8px;">
+          <button type="button" class="btn btn-secondary" onclick="closeAddModal()" style="flex: 1;">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="flex: 1;">Save Record</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let globalStudents = [];
+
+    async function init() {
+      await fetchStudents();
+      await fetchStack();
+      await fetchQueue();
+    }
+
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+      btn.classList.add('active');
+
+      if (tabId === 'what_if_tab') {
+        populateWhatIfSelect();
+        loadStudentDiagnosis();
+      }
+    }
+
+    async function fetchStudents() {
+      try {
+        const res = await fetch('/api/students');
+        globalStudents = await res.json();
+        renderStudentsTable(globalStudents);
+        renderLinkedListVisualizer(globalStudents);
+        document.getElementById('studentCountBadge').innerText = `${globalStudents.length} records in Linked List`;
+      } catch (err) {
+        console.error('Failed to fetch students:', err);
+      }
+    }
+
+    function renderLinkedListVisualizer(students) {
+      const container = document.getElementById('linkedListVisualizer');
+      if (students.length === 0) {
+        container.innerHTML = `<span style="color: var(--text-muted); font-size: 0.8rem;">HEAD -> NULL (List is empty)</span>`;
+        return;
+      }
+
+      let html = `<span style="color: var(--primary); font-weight: 600; font-size: 0.8rem;">HEAD</span> <span class="ll-arrow">&rarr;</span>`;
+      students.forEach(s => {
+        html += `
+          <div class="ll-node">
+            <div class="id">${s.student_id}</div>
+            <div class="name">${s.name}</div>
+            <div class="pct">${s.percentage}% (${s.grade.split(' ')[0]})</div>
+          </div>
+          <span class="ll-arrow">&rarr;</span>
+        `;
+      });
+      html += `<div class="ll-null">NULL</div>`;
+      container.innerHTML = html;
+    }
+
+    function renderStudentsTable(students) {
+      const tbody = document.getElementById('studentsTableBody');
+      tbody.innerHTML = '';
+      students.forEach(s => {
+        const marksStr = Object.entries(s.marks).map(([k, v]) => `${k}:${v}`).join(', ');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${s.student_id}</strong></td>
+          <td>${s.name}</td>
+          <td>${s.department}</td>
+          <td>${s.semester}</td>
+          <td style="font-size: 0.78rem; color: #8b949e;">${marksStr}</td>
+          <td>${s.total_marks.toFixed(1)}</td>
+          <td><strong>${s.percentage.toFixed(1)}%</strong></td>
+          <td>${s.grade}</td>
+          <td>
+            <button class="btn btn-danger" style="padding: 2px 6px; font-size: 0.72rem;" onclick="deleteStudent('${s.student_id}')">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function deleteStudent(studentId) {
+      if (!confirm(`Delete student ${studentId}? Action can be reverted via Undo.`)) return;
+      try {
+        const res = await fetch(`/api/students/${studentId}`, { method: 'DELETE' });
+        const data = await res.json();
+        alert(data.message);
+        await fetchStudents();
+        await fetchStack();
+      } catch (err) {
+        alert('Failed to delete student');
+      }
+    }
+
+    async function performUndo() {
+      try {
+        const res = await fetch('/api/undo', { method: 'POST' });
+        const data = await res.json();
+        alert(data.message);
+        await fetchStudents();
+        await fetchStack();
+      } catch (err) {
+        alert('Undo failed: Stack may be empty.');
+      }
+    }
+
+    async function fetchStack() {
+      try {
+        const res = await fetch('/api/stack');
+        const actions = await res.json();
+        const container = document.getElementById('stackVisualizer');
+        if (actions.length === 0) {
+          container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 24px 0; font-size: 0.8rem;">[ Stack is Empty ]</div>`;
+          return;
+        }
+
+        let html = '';
+        actions.forEach((a, idx) => {
+          const isTop = idx === actions.length - 1;
+          html += `
+            <div class="stack-item ${isTop ? 'top' : ''}">
+              <div>
+                <strong>${a.action_type}</strong>: ${a.description}
+              </div>
+              ${isTop ? '<span style="color: #a371f7; font-size: 0.7rem; font-weight: bold;">TOP</span>' : ''}
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (err) {
+        console.error('Failed to fetch stack:', err);
+      }
+    }
+
+    async function fetchQueue() {
+      try {
+        const res = await fetch('/api/queue');
+        const data = await res.json();
+        const container = document.getElementById('queueVisualizer');
+        if (data.pending.length === 0) {
+          container.innerHTML = `<div style="color: var(--text-muted); padding: 14px; font-size: 0.8rem;">[ Examination Queue is Empty ]</div>`;
+        } else {
+          let html = '';
+          data.pending.forEach((r, idx) => {
+            const isFront = idx === 0;
+            html += `
+              <div class="queue-item" style="${isFront ? 'border-left-color: var(--primary); background: #111a28;' : ''}">
+                <div style="display: flex; justify-content: space-between;">
+                  <strong style="color: var(--primary);">${r.request_id}</strong>
+                  ${isFront ? '<span style="font-size: 0.65rem; color: var(--primary); font-weight: 600;">FRONT</span>' : ''}
+                </div>
+                <div style="font-weight: 500; margin-top: 2px;">${r.student_name}</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">${r.activity_type}</div>
+              </div>
+            `;
+          });
+          container.innerHTML = html;
+        }
+
+        const tbody = document.getElementById('processedHistoryBody');
+        tbody.innerHTML = '';
+        data.history.forEach(h => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong>${h.request_id}</strong></td>
+            <td>${h.student_name}</td>
+            <td>${h.activity_type}</td>
+            <td><span style="color: #3fb950; font-size: 0.75rem;">Processed</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error('Failed to fetch queue:', err);
+      }
+    }
+
+    async function handleEnqueue(e) {
+      e.preventDefault();
+      const body = {
+        student_id: document.getElementById('eqStudentId').value,
+        activity_type: document.getElementById('eqActivityType').value,
+        details: document.getElementById('eqDetails').value,
+      };
+      await fetch('/api/queue/enqueue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      document.getElementById('enqueueForm').reset();
+      await fetchQueue();
+    }
+
+    async function dequeueRequest() {
+      const res = await fetch('/api/queue/dequeue', { method: 'POST' });
+      const data = await res.json();
+      alert(data.message);
+      await fetchQueue();
+    }
+
+    // Search and Sort
+    async function runSearchComparison() {
+      const q = document.getElementById('searchQuery').value.trim();
+      if (!q) { alert('Please enter a student ID'); return; }
+
+      const resLL = await (await fetch(`/api/search?q=${q}&algo=linear_ll`)).json();
+      const resArr = await (await fetch(`/api/search?q=${q}&algo=linear_arr`)).json();
+      const resBin = await (await fetch(`/api/search?q=${q}&algo=binary`)).json();
+
+      document.getElementById('searchComparisonBox').style.display = 'block';
+      const tbody = document.getElementById('searchResultTableBody');
+      tbody.innerHTML = `
+        <tr>
+          <td>Linear Search</td>
+          <td>Singly Linked List</td>
+          <td>${resLL.comparisons}</td>
+          <td>${resLL.execution_time_ms.toFixed(4)} ms</td>
+        </tr>
+        <tr>
+          <td>Linear Search</td>
+          <td>Python Array (List)</td>
+          <td>${resArr.comparisons}</td>
+          <td>${resArr.execution_time_ms.toFixed(4)} ms</td>
+        </tr>
+        <tr>
+          <td><strong>Binary Search</strong></td>
+          <td>Sorted Array (O(1) index)</td>
+          <td><strong>${resBin.comparisons}</strong></td>
+          <td><strong>${resBin.execution_time_ms.toFixed(4)} ms</strong></td>
+        </tr>
+      `;
+
+      const card = document.getElementById('searchStudentCard');
+      if (resLL.found && resLL.student) {
+        const s = resLL.student;
+        card.innerHTML = `<strong>Result:</strong> Found ${s.name} (${s.student_id}) | Dept: ${s.department} | Score: ${s.percentage}% (${s.grade})`;
+      } else {
+        card.innerHTML = `<span style="color: #f85149;">Target '${q}' not found in records.</span>`;
+      }
+    }
+
+    async function runSort() {
+      const algo = document.getElementById('sortAlgo').value;
+      const by = document.getElementById('sortBy').value;
+      const order = document.getElementById('sortOrder').value;
+
+      const res = await (await fetch(`/api/sort?algo=${algo}&by=${by}&order=${order}`)).json();
+
+      document.getElementById('sortMetricsBox').style.display = 'block';
+      document.getElementById('mSortTime').innerText = `${res.execution_time_ms.toFixed(3)} ms`;
+      document.getElementById('mSortComps').innerText = res.comparisons;
+      document.getElementById('mSortSwaps').innerText = res.swaps_or_shifts;
+
+      const resultsCard = document.getElementById('sortedResultsCard');
+      resultsCard.style.display = 'block';
+      document.getElementById('sortedResultsTitle').innerText = `Sorted by ${res.criterion.toUpperCase()} using ${res.algorithm}`;
+
+      const tbody = document.getElementById('sortedTableBody');
+      tbody.innerHTML = '';
+      res.sorted_students.forEach((s, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td><strong>${s.student_id}</strong></td>
+          <td>${s.name}</td>
+          <td>${s.department}</td>
+          <td>${s.percentage.toFixed(1)}%</td>
+          <td>${s.grade}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // What-If Simulator
+    function populateWhatIfSelect() {
+      const select = document.getElementById('whatIfStudentSelect');
+      select.innerHTML = '';
+      globalStudents.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.student_id;
+        opt.innerText = `${s.name} (${s.student_id}) - ${s.percentage}%`;
+        select.appendChild(opt);
+      });
+    }
+
+    async function loadStudentDiagnosis() {
+      const sid = document.getElementById('whatIfStudentSelect').value;
+      if (!sid) return;
+
+      const res = await (await fetch('/api/what-if/diagnose', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_id: sid }),
+      })).json();
+
+      const tbody = document.getElementById('diagnosisTableBody');
+      tbody.innerHTML = '';
+      res.diagnoses.forEach(d => {
+        let tagClass = 'tag-proficient';
+        if (d.status === 'Critical') tagClass = 'tag-critical';
+        else if (d.status === 'Needs Improvement') tagClass = 'tag-improve';
+        else if (d.status === 'Exemplary') tagClass = 'tag-exemplary';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${d.subject}</strong></td>
+          <td>${d.current_marks}/100</td>
+          <td><span class="${tagClass}">${d.status}</span></td>
+          <td>+${d.headroom.toFixed(1)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function calculateGoalPlan() {
+      const sid = document.getElementById('whatIfStudentSelect').value;
+      const targetPct = parseFloat(document.getElementById('whatIfTargetPct').value);
+
+      const res = await (await fetch('/api/what-if/goal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_id: sid, target_percentage: targetPct }),
+      })).json();
+
+      const container = document.getElementById('goalPlanContainer');
+      const badge = res.is_achievable 
+        ? '<span class="status-badge" style="color: #3fb950; border-color: #238636;">Achievable Goal</span>'
+        : '<span class="status-badge" style="color: #f85149; border-color: #da3633;">Goal Exceeds Maximum Attainable</span>';
+
+      let planRows = '';
+      if (res.plan) {
+        res.plan.forEach(p => {
+          planRows += `
+            <tr>
+              <td><strong>${p.subject}</strong></td>
+              <td>${p.current.toFixed(1)}</td>
+              <td>${p.target_marks.toFixed(1)}</td>
+              <td style="color: #3fb950;">+${p.delta.toFixed(1)}</td>
+            </tr>
+          `;
+        });
+      }
+
+      container.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <div style="font-size: 0.82rem; color: var(--text-muted);">
+            Current: ${res.current_percentage}% &rarr; Target: <strong>${res.target_percentage}%</strong>
+          </div>
+          <div>${badge}</div>
+        </div>
+        <p style="font-size: 0.82rem; background: #090d14; padding: 10px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 12px;">
+          ${res.advice}
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Current</th>
+              <th>Target Score</th>
+              <th>Marks Needed</th>
+            </tr>
+          </thead>
+          <tbody>${planRows}</tbody>
+        </table>
+      `;
+    }
+
+    // Benchmarks
+    async function runBenchmarks() {
+      document.getElementById('benchmarkLoading').style.display = 'block';
+      document.getElementById('benchmarkContent').style.display = 'none';
+
+      const res = await (await fetch('/api/benchmarks')).json();
+
+      document.getElementById('benchmarkLoading').style.display = 'none';
+      document.getElementById('benchmarkContent').style.display = 'block';
+
+      // Storage
+      const hi = res.storage.head_insertion;
+      document.getElementById('bmStorageResults').innerHTML = `
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Inserting at index 0 across <strong>${res.storage.dataset_size}</strong> elements:</p>
+        <div class="grid-2">
+          <div class="metric-box">
+            <div class="metric-label">Singly Linked List</div>
+            <div class="metric-value" style="color: #7ee787;">${hi.linked_list_ms} ms</div>
+            <div style="font-size: 0.72rem; color: var(--text-muted);">O(1) pointer updates</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Python Array (List)</div>
+            <div class="metric-value" style="color: #f85149;">${hi.python_list_ms} ms</div>
+            <div style="font-size: 0.72rem; color: var(--text-muted);">O(n) element shifts</div>
+          </div>
+        </div>
+        <p style="margin-top: 8px; font-size: 0.8rem; color: var(--primary);">Linked List head insertion is <strong>${hi.ratio_py_to_ll}x faster</strong>.</p>
+      `;
+
+      // Searching
+      let searchRows = '';
+      res.searching.forEach(r => {
+        searchRows += `
+          <tr>
+            <td><strong>N = ${r.size}</strong></td>
+            <td>${r.linear_comparisons}</td>
+            <td>${r.linear_time_ms.toFixed(4)} ms</td>
+            <td>${r.binary_comparisons}</td>
+            <td>${r.binary_time_ms.toFixed(4)} ms</td>
+            <td style="color: #7ee787; font-weight: 600;">${r.speedup_factor}x</td>
+          </tr>
+        `;
+      });
+      document.getElementById('bmSearchingResults').innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Dataset (N)</th>
+              <th>Linear Comps</th>
+              <th>Linear Time</th>
+              <th>Binary Comps</th>
+              <th>Binary Time</th>
+              <th>Speedup</th>
+            </tr>
+          </thead>
+          <tbody>${searchRows}</tbody>
+        </table>
+      `;
+
+      // Sorting
+      let sortRows = '';
+      res.sorting.forEach(r => {
+        sortRows += `
+          <tr>
+            <td><strong>N = ${r.size}</strong></td>
+            <td>${r.bubble.time_ms.toFixed(2)} ms (${r.bubble.comparisons} comps)</td>
+            <td>${r.insertion.time_ms.toFixed(2)} ms (${r.insertion.comparisons} comps)</td>
+            <td><strong style="color: #7ee787;">${r.merge.time_ms.toFixed(2)} ms</strong> (${r.merge.comparisons} comps)</td>
+          </tr>
+        `;
+      });
+      document.getElementById('bmSortingResults').innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Dataset (N)</th>
+              <th>Bubble Sort (O(n^2))</th>
+              <th>Insertion Sort (O(n^2))</th>
+              <th>Merge Sort (O(n log n))</th>
+            </tr>
+          </thead>
+          <tbody>${sortRows}</tbody>
+        </table>
+      `;
+    }
+
+    function openAddModal() { document.getElementById('addModal').style.display = 'flex'; }
+    function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
+
+    async function handleAddStudent(e) {
+      e.preventDefault();
+      const body = {
+        student_id: document.getElementById('addId').value.trim().toUpperCase(),
+        name: document.getElementById('addName').value.trim(),
+        department: document.getElementById('addDept').value.trim(),
+        semester: parseInt(document.getElementById('addSem').value),
+        marks: {
+          DSA: parseFloat(document.getElementById('mDSA').value),
+          WebDev: parseFloat(document.getElementById('mWeb').value),
+          OS: parseFloat(document.getElementById('mOS').value),
+          Maths: parseFloat(document.getElementById('mMath').value),
+        }
+      };
+
+      const res = await fetch('/api/students', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      alert(data.message);
+      if (data.success) {
+        closeAddModal();
+        await fetchStudents();
+        await fetchStack();
+      }
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>

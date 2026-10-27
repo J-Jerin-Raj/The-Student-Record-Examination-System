@@ -1,0 +1,132 @@
+[
+  {
+    "student_id": "STU101",
+    "name": "Jerin Raj",
+    "department": "CSE",
+    "semester": 3,
+    "marks": {
+      "DSA": 92.5,
+      "WebDev": 88.0,
+      "OS": 85.0,
+      "Maths": 79.5,
+      "DBMS": 91.0
+    }
+  },
+  {
+    "student_id": "STU102",
+    "name": "Jebaston",
+    "department": "CSE",
+    "semester": 3,
+    "marks": {
+      "DSA": 74.0,
+      "WebDev": 81.5,
+      "OS": 68.0,
+      "Maths": 58.0,
+      "DBMS": 72.5
+    }
+  },
+  {
+    "student_id": "STU103",
+    "name": "Sarvesh",
+    "department": "IT",
+    "semester": 3,
+    "marks": {
+      "DSA": 95.0,
+      "WebDev": 96.0,
+      "OS": 92.0,
+      "Maths": 89.0,
+      "DBMS": 94.0
+    }
+  },
+  {
+    "student_id": "STU104",
+    "name": "Alan",
+    "department": "ECE",
+    "semester": 3,
+    "marks": {
+      "DSA": 58.0,
+      "WebDev": 62.5,
+      "OS": 51.0,
+      "Maths": 45.0,
+      "DBMS": 55.0
+    }
+  },
+  {
+    "student_id": "STU105",
+    "name": "Akash",
+    "department": "CSE",
+    "semester": 3,
+    "marks": {
+      "DSA": 84.5,
+      "WebDev": 79.0,
+      "OS": 76.5,
+      "Maths": 88.0,
+      "DBMS": 82.0
+    }
+  },
+  {
+    "student_id": "STU106",
+    "name": "Gavriel",
+    "department": "IT",
+    "semester": 3,
+    "marks": {
+      "DSA": 65.0,
+      "WebDev": 71.0,
+      "OS": 60.5,
+      "Maths": 64.0,
+      "DBMS": 68.5
+    }
+  },
+  {
+    "student_id": "STU107",
+    "name": "Zacheria",
+    "department": "CSE",
+    "semester": 3,
+    "marks": {
+      "DSA": 89.0,
+      "WebDev": 85.5,
+      "OS": 91.0,
+      "Maths": 94.5,
+      "DBMS": 87.0
+    }
+  },
+  {
+    "student_id": "STU108",
+    "name": "Roshan",
+    "department": "ECE",
+    "semester": 3,
+    "marks": {
+      "DSA": 46.0,
+      "WebDev": 52.0,
+      "OS": 48.5,
+      "Maths": 42.0,
+      "DBMS": 50.0
+    }
+  },
+  {
+    "student_id": "STU109",
+    "name": "Gandhi Ji",
+    "department": "IT",
+    "semester": 3,
+    "marks": {
+      "DSA": 78.0,
+      "WebDev": 82.0,
+      "OS": 79.5,
+      "Maths": 71.0,
+      "DBMS": 75.0
+    }
+  },
+  {
+    "student_id": "STU110",
+    "name": "Joywin",
+    "department": "CSE",
+    "semester": 3,
+    "marks": {
+      "DSA": 98.0,
+      "WebDev": 94.0,
+      "OS": 96.0,
+      "Maths": 99.0,
+      "DBMS": 97.5
+    }
+  }
+]
