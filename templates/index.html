@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acadence | Student Academic & Examination Assistant</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- Collapsible Sidebar -->
+  <aside class="sidebar" id="mainSidebar">
+    <div class="sidebar-header">
+      <div class="brand-wrapper">
+        <div class="brand-icon">A</div>
+        <span class="brand-text">Acadence</span>
+      </div>
+      <button class="btn-sidebar-toggle" id="btnSidebarToggle" title="Toggle Sidebar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li class="nav-item">
+        <button class="active" data-view="dashboard" onclick="switchView('dashboard')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span class="nav-text">Dashboard</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button data-view="planner" onclick="switchView('planner')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span class="nav-text">Academic Planner</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button data-view="exams" onclick="switchView('exams')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span class="nav-text">Examinations</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button data-view="performance" onclick="switchView('performance')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span class="nav-text">Performance</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button data-view="rescue" onclick="switchView('rescue')" style="border-left: 2px solid var(--danger);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span class="nav-text" style="color: var(--danger); font-weight: 600;">Academic Rescue</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button data-view="dsalab" onclick="switchView('dsalab')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+          <span class="nav-text">DSA Lab</span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+        <button class="btn btn-secondary" style="flex: 1; padding: 4px 6px; font-size: 0.72rem;" onclick="resetDemoData()">Reset Data</button>
+        <button class="btn btn-secondary" style="flex: 1; padding: 4px 6px; font-size: 0.72rem;" onclick="clearAllData()">Clear Data</button>
+      </div>
+      <div>Acadence v2.0 &bull; DSA Core</div>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-content">
+
+    <!-- Top Header -->
+    <header class="top-header">
+      <h2 class="page-title" id="topPageTitle">Academic Dashboard</h2>
+
+      <div class="header-actions">
+        <!-- Undo Button (LIFO Stack CO1) -->
+        <button class="btn btn-warning" id="btnTopUndo" onclick="triggerUndo()" disabled title="Undo last action">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 7v6h6"></path>
+            <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
+          </svg>
+          Undo
+        </button>
+
+        <button class="btn btn-primary" onclick="openModal('modalAddTask')">Add Task</button>
+        <button class="btn btn-secondary" onclick="openModal('modalAddExam')">Add Exam</button>
+        <button class="btn btn-secondary" onclick="openModal('modalAddAssessment')">Record Marks</button>
+        <button class="btn btn-secondary" onclick="toggleTheme()" title="Toggle Dark/Light Mode">Theme</button>
+      </div>
+    </header>
+
+    <div class="content-container">
+
+      <!-- ================= VIEW 1: DASHBOARD ================= -->
+      <section id="view-dashboard" class="view-section">
+
+        <!-- Countdown Banner -->
+        <div class="countdown-banner" id="dashCountdownBanner" style="display: none;">
+          <div>
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary); font-weight: 700; letter-spacing: 0.5px;">Upcoming Examination</div>
+            <h3 style="font-size: 1.25rem; font-weight: 700; margin: 2px 0;" id="nextExamSubject">Data Structures & Algorithms</h3>
+            <div style="font-size: 0.8rem; color: var(--text-muted);" id="nextExamTimeVenue">2026-11-15 09:30 (Exam Hall B-101)</div>
+          </div>
+          <div class="countdown-digits">
+            <div class="digit-unit">
+              <div class="digit-number" id="cdDays">00</div>
+              <div class="digit-label">Days</div>
+            </div>
+            <div class="digit-unit">
+              <div class="digit-number" id="cdHours">00</div>
+              <div class="digit-label">Hours</div>
+            </div>
+            <div class="digit-unit">
+              <div class="digit-number" id="cdMins">00</div>
+              <div class="digit-label">Mins</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Schedule Clash Warning Banner -->
+        <div class="rescue-banner" id="dashConflictAlert" style="display: none;"></div>
+
+        <!-- Task Stat Boxes -->
+        <div class="grid-4" style="margin-bottom: 20px;">
+          <div class="stat-box">
+            <div class="stat-value" id="statPending">0</div>
+            <div class="stat-label">Pending Tasks</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="statInProgress" style="color: var(--primary);">0</div>
+            <div class="stat-label">In Progress</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="statCompleted" style="color: var(--success);">0</div>
+            <div class="stat-label">Completed</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="statOverdue" style="color: var(--danger);">0</div>
+            <div class="stat-label">Overdue Tasks</div>
+          </div>
+        </div>
+
+        <!-- Main Dashboard Split: "What Should I Do Next?" vs Academic Health -->
+        <div class="grid-2">
+          <!-- "What Should I Do Next?" -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">What Should I Do Next?</div>
+                <div class="card-subtitle">Transparent rule-based priority engine recommendations</div>
+              </div>
+              <button class="btn btn-secondary" style="font-size: 0.75rem;" onclick="switchView('planner')">Full Planner</button>
+            </div>
+            <div id="dashNextTasksList">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Academic Status & Rescue Overview -->
+          <div>
+            <!-- Rescue Summary Box -->
+            <div class="card" style="border-left: 4px solid var(--danger);">
+              <div class="card-header">
+                <div>
+                  <div class="card-title" style="color: var(--danger);">Academic Rescue Status</div>
+                  <div class="card-subtitle" id="dashCrisisLevel">Stable Academic Standing</div>
+                </div>
+                <div style="font-size: 1.4rem; font-weight: 700; color: var(--danger);" id="dashCrisisScore">0/100</div>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;" id="dashRescueAdvice">
+                Workload is manageable. Maintain your scheduled pace to stay ahead.
+              </p>
+              <button class="btn btn-danger" style="width: 100%;" onclick="switchView('rescue')">Open Rescue Mode Triage</button>
+            </div>
+
+            <!-- Performance Overview Card -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Performance Summary</div>
+                  <div class="card-subtitle" id="dashVulnerableCount">0 subjects need attention</div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);" id="dashOverallAvg">0.0%</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);" id="dashOverallGrade">Pass</div>
+                </div>
+              </div>
+              <button class="btn btn-secondary" style="width: 100%;" onclick="switchView('performance')">View Subject Analytics & Target Calculator</button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= VIEW 2: ACADEMIC PLANNER ================= -->
+      <section id="view-planner" class="view-section" style="display: none;">
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Smart Academic Planner</div>
+              <div class="card-subtitle">Manage assignments, lab deliverables, and scheduled study sessions</div>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('modalAddTask')">Add New Task</button>
+          </div>
+
+          <!-- Filter Controls -->
+          <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+            <div style="min-width: 180px;">
+              <label>Status Filter</label>
+              <select id="plannerStatusFilter" onchange="loadPlanner()" style="margin: 0;">
+                <option value="All">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+            <div style="min-width: 220px;">
+              <label>Subject Filter</label>
+              <select id="plannerSubjectFilter" onchange="loadPlanner()" style="margin: 0;">
+                <option value="All">All Subjects</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Task Title</th>
+                  <th>Subject</th>
+                  <th>Priority</th>
+                  <th>Deadline</th>
+                  <th>Est. Effort</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="plannerTasksTbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Suggested Daily Study Schedule Card -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Suggested Daily Study Schedule</div>
+              <div class="card-subtitle">Plan today's study session based on available hours and task urgency</div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 12px; align-items: flex-end; margin-bottom: 16px; max-width: 450px;">
+            <div style="flex: 1;">
+              <label>Available Study Time Today (Hours)</label>
+              <input type="number" id="dailyHoursInput" value="3.5" min="0.5" max="12.0" step="0.5" style="margin: 0;">
+            </div>
+            <button class="btn btn-primary" onclick="calculateDailySchedule()">Generate Plan</button>
+          </div>
+
+          <div id="dailyScheduleResults" style="display: none;">
+            <div style="font-size: 0.85rem; font-weight: 600; color: var(--primary); margin-bottom: 10px;" id="dailyHoursAllocated">
+              3.5 of 3.5 hours planned
+            </div>
+            <div id="dailyScheduleList"></div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= VIEW 3: EXAMINATIONS ================= -->
+      <section id="view-exams" class="view-section" style="display: none;">
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Examination Schedule</div>
+              <div class="card-subtitle">Track dates, venues, revision completion, and schedule conflict warnings</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-primary" onclick="openModal('modalAddExam')">Schedule Exam</button>
+            </div>
+          </div>
+
+          <!-- Sorting Controls using CO3 Algorithms -->
+          <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+            <div style="min-width: 180px;">
+              <label>Sort By</label>
+              <select id="examSortBy" onchange="loadExams()" style="margin: 0;">
+                <option value="date">Date & Time</option>
+                <option value="subject">Subject Name</option>
+                <option value="priority">Priority Level</option>
+                <option value="revision">Lowest Revision First</option>
+              </select>
+            </div>
+            <div style="min-width: 220px;">
+              <label>Algorithm (CO3)</label>
+              <select id="examSortAlgo" onchange="loadExams()" style="margin: 0;">
+                <option value="merge">Merge Sort (O(n log n))</option>
+                <option value="insertion">Insertion Sort (O(n^2))</option>
+                <option value="bubble">Bubble Sort (O(n^2))</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Date</th>
+                  <th>Time Slot</th>
+                  <th>Venue</th>
+                  <th>Revision Progress</th>
+                  <th>Priority</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="examsTbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- FIFO Academic Request Queue (CO1) -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">FIFO Academic Service Request Queue (CO1)</div>
+              <div class="card-subtitle">Manage hall ticket issuance and exam re-evaluation queries in strict FIFO sequence</div>
+            </div>
+            <button class="btn btn-success" onclick="processQueueItem()">Process Next in Line (Dequeue)</button>
+          </div>
+
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 500;">
+            FRONT (Exit) &larr; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; REAR (Entry)
+          </div>
+          <div style="display: flex; gap: 10px; overflow-x: auto; padding: 12px 6px; background: var(--bg-color); border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 16px;" id="examQueueTrack">
+            <!-- Dynamically populated queue items -->
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <h4 style="font-size: 0.88rem; margin-bottom: 10px;">Submit Academic Request</h4>
+              <form id="formEnqueueRequest" onsubmit="handleEnqueueRequest(event)">
+                <div class="form-group">
+                  <label>Student Name</label>
+                  <input type="text" id="reqFormName" value="Alex Chen" required>
+                </div>
+                <div class="form-group">
+                  <label>Request Type</label>
+                  <select id="reqFormType">
+                    <option value="Hall Ticket Generation">Hall Ticket Generation</option>
+                    <option value="Re-evaluation">Grade Re-evaluation</option>
+                    <option value="Doubt Session">Doubt Clarification Session</option>
+                    <option value="Supplementary Application">Supplementary Exam Application</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Subject</label>
+                  <input type="text" id="reqFormSubject" placeholder="e.g. Operating Systems" required>
+                </div>
+                <div class="form-group">
+                  <label>Details / Reason</label>
+                  <input type="text" id="reqFormDetails" placeholder="e.g. Mid-term paper re-check">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Enqueue Request (O(1))</button>
+              </form>
+            </div>
+
+            <div>
+              <h4 style="font-size: 0.88rem; margin-bottom: 10px;">Processed History</h4>
+              <div class="table-responsive" style="max-height: 250px;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Req ID</th>
+                      <th>Student</th>
+                      <th>Type</th>
+                      <th>Subject</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="examQueueHistoryTbody">
+                    <!-- Dynamically populated -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= VIEW 4: PERFORMANCE ================= -->
+      <section id="view-performance" class="view-section" style="display: none;">
+
+        <!-- Overview Header -->
+        <div class="grid-2" style="margin-bottom: 20px;">
+          <div class="stat-box">
+            <div class="stat-value" id="perfSummaryAvg">0.0%</div>
+            <div class="stat-label">Cumulative Weighted Average</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="perfSummaryGrade" style="color: var(--primary);">Pass</div>
+            <div class="stat-label">Overall Academic Standing</div>
+          </div>
+        </div>
+
+        <!-- Subject Performance Cards Grid -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Subject-Wise Performance & Decline Alerts</div>
+              <div class="card-subtitle">Transparent rule-based detection flags performance drops over 10% or negative trajectories</div>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('modalAddAssessment')">Record Marks</button>
+          </div>
+
+          <div class="grid-2" id="perfSubjectGrid">
+            <!-- Dynamically populated subject cards -->
+          </div>
+        </div>
+
+        <!-- Target Score Calculator & Revision Priorities -->
+        <div class="grid-2">
+          <!-- Target Score Calculator -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Target Score Calculator</div>
+                <div class="card-subtitle">Calculate score needed in upcoming assessment to reach target average</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Select Subject</label>
+              <select id="targetScoreSubject">
+                <!-- Dynamically populated -->
+              </select>
+            </div>
+
+            <div class="grid-3" style="margin-bottom: 12px;">
+              <div>
+                <label>Target Average (%)</label>
+                <input type="number" id="targetScoreInput" value="80" min="40" max="100">
+              </div>
+              <div>
+                <label>Max Marks</label>
+                <input type="number" id="targetMaxMarks" value="100" min="10" max="100">
+              </div>
+              <div>
+                <label>Weightage (%)</label>
+                <input type="number" id="targetWeightage" value="30" min="5" max="60">
+              </div>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 14px;" onclick="calculateTargetScore()">Calculate Required Score</button>
+
+            <div id="targetScoreResultBox" style="display: none; padding: 12px; background: var(--surface-hover); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+              <!-- Injected calculation result -->
+            </div>
+          </div>
+
+          <!-- Suggested Revision Priorities -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Suggested Revision Priorities</div>
+                <div class="card-subtitle">Ranked by performance vulnerability and upcoming exam proximity</div>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Subject</th>
+                    <th>Average</th>
+                    <th>Status</th>
+                    <th>Exam Proximity</th>
+                    <th>Revision</th>
+                    <th>Score</th>
+                  </tr>
+                </thead>
+                <tbody id="revisionPrioritiesTbody">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= VIEW 5: ACADEMIC RESCUE MODE ================= -->
+      <section id="view-rescue" class="view-section" style="display: none;">
+
+        <div class="rescue-banner" style="margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <span class="badge badge-critical" style="font-size: 0.8rem; margin-bottom: 6px;">Rescue Mode Active</span>
+              <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--danger); margin: 4px 0;" id="rescueStatusLevel">Severe Academic Pressure</h3>
+              <p style="font-size: 0.85rem; color: var(--text-main);" id="rescueActionStatement">
+                Take immediate action: Complete overdue items first and focus strictly on top recommendations.
+              </p>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 2rem; font-weight: 800; color: var(--danger);" id="rescueCrisisIndex">75 / 100</div>
+              <div style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase;">Crisis Index</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Emergency Metrics -->
+        <div class="grid-4" style="margin-bottom: 20px;">
+          <div class="stat-box" style="border-left: 3px solid var(--danger);">
+            <div class="stat-value" id="rescueOverdueCount" style="color: var(--danger);">0</div>
+            <div class="stat-label">Overdue Tasks</div>
+          </div>
+          <div class="stat-box" style="border-left: 3px solid var(--warning);">
+            <div class="stat-value" id="rescueDueSoonCount" style="color: var(--warning);">0</div>
+            <div class="stat-label">Due In &lt; 48 Hours</div>
+          </div>
+          <div class="stat-box" style="border-left: 3px solid var(--danger);">
+            <div class="stat-value" id="rescueVulnerableCount" style="color: var(--danger);">0</div>
+            <div class="stat-label">Vulnerable Subjects</div>
+          </div>
+          <div class="stat-box" style="border-left: 3px solid var(--primary);">
+            <div class="stat-value" id="rescueImminentExamsCount" style="color: var(--primary);">0</div>
+            <div class="stat-label">Exams In &lt; 10 Days</div>
+          </div>
+        </div>
+
+        <!-- Triage Action Plan -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Triage Action Plan: Top Recommended Tasks</div>
+              <div class="card-subtitle">Ranked by urgency, priority level, subject vulnerability penalty, and quick-win feasibility</div>
+            </div>
+            <button class="btn btn-secondary" onclick="loadRescueMode()">Recalculate Priorities</button>
+          </div>
+
+          <div id="rescueRecommendationsList">
+            <!-- Dynamically populated recommendations -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= VIEW 6: DSA PERFORMANCE LAB ================= -->
+      <section id="view-dsalab" class="view-section" style="display: none;">
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">DSA Performance Lab (CO2 & CO3)</div>
+              <div class="card-subtitle">Empirical performance benchmarks executed on equivalent datasets using manual algorithms</div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 14px; align-items: flex-end; margin-bottom: 18px; flex-wrap: wrap;">
+            <div style="min-width: 220px;">
+              <label>Dataset Size (N Elements)</label>
+              <select id="dsaDatasetSize" style="margin: 0;">
+                <option value="100">N = 100 records</option>
+                <option value="500">N = 500 records</option>
+                <option value="1000" selected>N = 1,000 records</option>
+                <option value="2500">N = 2,500 records</option>
+                <option value="5000">N = 5,000 records</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="runSearchBenchmark()">Run Search Benchmark</button>
+            <button class="btn btn-secondary" onclick="runSortBenchmark()">Run Sorting Benchmark</button>
+            <button class="btn btn-secondary" onclick="runStorageBenchmark()">Compare Storage (Linked List vs Array)</button>
+          </div>
+
+          <!-- Searching Results -->
+          <div id="dsaSearchResultsBox" style="display: none; margin-bottom: 20px;">
+            <h4 style="font-size: 0.9rem; margin-bottom: 8px;">Searching Algorithms Comparison (CO2 & CO3)</h4>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Algorithm</th>
+                    <th>Underlying Data Structure</th>
+                    <th>Comparisons</th>
+                    <th>Execution Time</th>
+                    <th>Theoretical Complexity</th>
+                  </tr>
+                </thead>
+                <tbody id="dsaSearchTbody"></tbody>
+              </table>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--primary); margin-top: 8px;" id="dsaSearchSpeedup"></p>
+          </div>
+
+          <!-- Sorting Results -->
+          <div id="dsaSortResultsBox" style="display: none; margin-bottom: 20px;">
+            <h4 style="font-size: 0.9rem; margin-bottom: 8px;">Sorting Algorithms Comparison (CO3)</h4>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Algorithm</th>
+                    <th>Execution Time</th>
+                    <th>Comparisons</th>
+                    <th>Swaps / Shifts</th>
+                    <th>Theoretical Complexity</th>
+                  </tr>
+                </thead>
+                <tbody id="dsaSortTbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Storage Results -->
+          <div id="dsaStorageResultsBox" style="display: none; margin-bottom: 20px; background: var(--surface-hover); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          </div>
+
+          <!-- Report Ready Big-O Complexity Table -->
+          <div style="margin-top: 24px;">
+            <h4 style="font-size: 0.9rem; margin-bottom: 8px;">Report-Ready Complexity Reference Table</h4>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Data Structure / Algorithm</th>
+                    <th>Best Case</th>
+                    <th>Average Case</th>
+                    <th>Worst Case</th>
+                    <th>Space Complexity</th>
+                    <th>Role in Acadence</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Custom Stack</strong></td>
+                    <td>O(1)</td>
+                    <td>O(1)</td>
+                    <td>O(1)</td>
+                    <td>O(1) auxiliary</td>
+                    <td>Multi-level Undo Engine for tasks, exams, and grades</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Custom Queue</strong></td>
+                    <td>O(1)</td>
+                    <td>O(1)</td>
+                    <td>O(1)</td>
+                    <td>O(1) auxiliary</td>
+                    <td>FIFO Examination Service Request Queue</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Singly Linked List</strong></td>
+                    <td>O(1) [Head]</td>
+                    <td>O(n)</td>
+                    <td>O(n)</td>
+                    <td>O(1) auxiliary</td>
+                    <td>In-memory dynamic task and exam record storage</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Linear Search</strong></td>
+                    <td>O(1)</td>
+                    <td>O(n)</td>
+                    <td>O(n)</td>
+                    <td>O(1) auxiliary</td>
+                    <td>Sequential traversal on unsorted tasks & linked lists</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Binary Search</strong></td>
+                    <td>O(1)</td>
+                    <td>O(log n)</td>
+                    <td>O(log n)</td>
+                    <td>O(1) auxiliary</td>
+                    <td>Fast lookup on sorted exam and task arrays</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Bubble Sort</strong></td>
+                    <td>O(n) [flag]</td>
+                    <td>O(n^2)</td>
+                    <td>O(n^2)</td>
+                    <td>O(1) auxiliary</td>
+                    <td>Baseline comparison sorting</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Insertion Sort</strong></td>
+                    <td>O(n) [sorted]</td>
+                    <td>O(n^2)</td>
+                    <td>O(n^2)</td>
+                    <td>O(1) auxiliary</td>
+                    <td>Fast incremental sorting for small task batches</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Merge Sort</strong></td>
+                    <td>O(n log n)</td>
+                    <td>O(n log n)</td>
+                    <td>O(n log n)</td>
+                    <td>O(n) auxiliary</td>
+                    <td>Stable divide-and-conquer sorting for exams & merit ranks</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- Modal: Add Task -->
+  <div class="modal-backdrop" id="modalAddTask">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="font-size: 1rem;">Add Academic Task</h3>
+        <button class="btn btn-secondary" style="padding: 2px 6px;" onclick="closeModal('modalAddTask')">Close</button>
+      </div>
+      <form id="formAddTask" onsubmit="handleAddTask(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Task Title</label>
+            <input type="text" id="taskFormTitle" placeholder="e.g. Implement Graph Traversal Algorithm" required>
+          </div>
+          <div class="form-group">
+            <label>Subject</label>
+            <input type="text" id="taskFormSubject" placeholder="e.g. Data Structures & Algorithms" required>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Task Type</label>
+              <select id="taskFormType">
+                <option value="Assignment">Assignment</option>
+                <option value="Project">Project Milestone</option>
+                <option value="Lab Work">Lab Work</option>
+                <option value="Reading">Exam Preparation</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Priority Level</label>
+              <select id="taskFormPriority">
+                <option value="Critical">Critical</option>
+                <option value="High">High</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Deadline (Date & Time)</label>
+              <input type="datetime-local" id="taskFormDeadline" required>
+            </div>
+            <div class="form-group">
+              <label>Estimated Effort (Hours)</label>
+              <input type="number" id="taskFormEffort" value="2.5" min="0.5" max="50" step="0.5" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Notes / Deliverables</label>
+            <textarea id="taskFormNotes" rows="2" placeholder="Key deliverables or test cases..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modalAddTask')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add Exam -->
+  <div class="modal-backdrop" id="modalAddExam">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="font-size: 1rem;">Schedule Examination</h3>
+        <button class="btn btn-secondary" style="padding: 2px 6px;" onclick="closeModal('modalAddExam')">Close</button>
+      </div>
+      <form id="formAddExam" onsubmit="handleAddExam(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Subject</label>
+            <input type="text" id="examFormSubject" placeholder="e.g. Operating Systems" required>
+          </div>
+          <div class="form-group">
+            <label>Exam Date</label>
+            <input type="date" id="examFormDate" required>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Start Time</label>
+              <input type="time" id="examFormStartTime" value="09:30" required>
+            </div>
+            <div class="form-group">
+              <label>End Time</label>
+              <input type="time" id="examFormEndTime" value="12:30" required>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Venue / Hall</label>
+              <input type="text" id="examFormVenue" value="Exam Hall A-101" required>
+            </div>
+            <div class="form-group">
+              <label>Priority</label>
+              <select id="examFormPriority">
+                <option value="Critical">Critical</option>
+                <option value="High" selected>High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Current Revision Completion (%)</label>
+            <input type="number" id="examFormRevision" value="50" min="0" max="100">
+          </div>
+          <div class="form-group">
+            <label>Syllabus Units</label>
+            <textarea id="examFormSyllabus" rows="2" placeholder="Units 1 to 5..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modalAddExam')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Schedule Exam</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Record Assessment -->
+  <div class="modal-backdrop" id="modalAddAssessment">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="font-size: 1rem;">Record Assessment Marks</h3>
+        <button class="btn btn-secondary" style="padding: 2px 6px;" onclick="closeModal('modalAddAssessment')">Close</button>
+      </div>
+      <form id="formAddAssessment" onsubmit="handleAddAssessment(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Subject</label>
+            <input type="text" id="assessFormSubject" placeholder="e.g. Discrete Mathematics" required>
+          </div>
+          <div class="form-group">
+            <label>Assessment Name</label>
+            <input type="text" id="assessFormName" placeholder="e.g. Mid-Term Exam" required>
+          </div>
+          <div class="form-group">
+            <label>Assessment Type</label>
+            <select id="assessFormType">
+              <option value="Quiz">Quiz</option>
+              <option value="Assignment">Assignment</option>
+              <option value="Internal" selected>Internal Exam</option>
+              <option value="Lab">Lab Practical</option>
+              <option value="Final">End-Semester</option>
+            </select>
+          </div>
+          <div class="grid-3">
+            <div class="form-group">
+              <label>Marks Obtained</label>
+              <input type="number" id="assessFormMarks" step="0.5" required>
+            </div>
+            <div class="form-group">
+              <label>Max Marks</label>
+              <input type="number" id="assessFormMax" value="100" step="0.5" required>
+            </div>
+            <div class="form-group">
+              <label>Weightage (%)</label>
+              <input type="number" id="assessFormWeight" value="25" min="1" max="100" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Date Conducted</label>
+            <input type="date" id="assessFormDate" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modalAddAssessment')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Score</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast">Notification message</div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

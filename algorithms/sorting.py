@@ -1,70 +1,50 @@
 """
 Sorting Algorithms Implementation (CO3).
 Includes:
-1. Bubble Sort: Comparison-based O(n^2) sorting with early termination optimization.
-2. Insertion Sort: Incremental O(n^2) sorting, highly efficient for small/nearly sorted data.
-3. Merge Sort: Divide-and-conquer O(n log n) sorting, stable and predictable.
+1. Bubble Sort: O(n^2) comparison-based sort with early-termination optimization.
+2. Insertion Sort: O(n^2) incremental sort with low constant factors, optimal for small sets.
+3. Merge Sort: O(n log n) divide-and-conquer stable sort.
 
-Supports dynamic sorting criteria:
-- By Marks (total_marks or percentage)
-- By Name (alphabetical)
-- By Student ID (alphanumerical)
-Supports both Ascending and Descending orders.
-Collects performance metrics (comparisons, swaps/shifts, runtime ms).
+Collects empirical metrics: wall-clock runtime (ms), comparison counter, and swap/move operations.
 """
 
 import time
 from dataclasses import dataclass
-from typing import Any, Callable, List, Tuple
+from typing import Any, Callable, List
 
 
 @dataclass
 class SortResult:
-    """Holds the sorted output and benchmarking metrics of a sort operation."""
+    """Holds sorted list and empirical performance statistics."""
     sorted_items: List[Any]
     comparisons: int
-    swaps_or_shifts: int
+    swaps_or_moves: int
     execution_time_ms: float
     algorithm: str
-    criterion: str
-    reverse: bool
-
-
-def get_key_extractor(criterion: str) -> Callable[[Any], Any]:
-    """Helper to obtain value extractor function based on sorting criterion."""
-    crit = criterion.strip().lower()
-    if crit in ("marks", "percentage", "total_marks", "score"):
-        return lambda s: s.percentage
-    elif crit in ("name", "student_name"):
-        return lambda s: s.name.lower()
-    elif crit in ("id", "student_id"):
-        return lambda s: str(s.student_id).lower()
-    else:
-        return lambda s: s.student_id
 
 
 def bubble_sort(
     arr: List[Any],
-    criterion: str = "marks",
-    reverse: bool = True,
+    key_func: Callable[[Any], Any] = lambda x: x,
+    reverse: bool = False,
 ) -> SortResult:
     """
     Bubble Sort Implementation.
-    Repeatedly steps through the list, compares adjacent elements and swaps them
-    if they are in the wrong order. Features an optimized early-exit flag.
+    Repeatedly steps through list, compares adjacent elements, and swaps if misordered.
+    Includes early-termination flag if no swap occurs in a pass.
 
     Time Complexity:
-      - Best: O(n) [already sorted list]
-      - Worst / Average: O(n^2)
-    Space Complexity: O(1) auxiliary (in-place on shallow copy)
+      - Best Case: O(n) [already sorted]
+      - Worst Case: O(n^2) [reverse sorted]
+      - Average Case: O(n^2)
+    Space Complexity: O(1) auxiliary
     """
     items = list(arr)
     n = len(items)
-    key_func = get_key_extractor(criterion)
     comparisons = 0
     swaps = 0
 
-    start_time = time.perf_counter()
+    start = time.perf_counter()
 
     for i in range(n):
         swapped = False
@@ -73,9 +53,8 @@ def bubble_sort(
             val_a = key_func(items[j])
             val_b = key_func(items[j + 1])
 
-            # Determine whether swap is needed
-            should_swap = (val_a < val_b) if reverse else (val_a > val_b)
-            if should_swap:
+            condition = (val_a < val_b) if reverse else (val_a > val_b)
+            if condition:
                 items[j], items[j + 1] = items[j + 1], items[j]
                 swaps += 1
                 swapped = True
@@ -83,41 +62,38 @@ def bubble_sort(
         if not swapped:
             break
 
-    elapsed_ms = (time.perf_counter() - start_time) * 1000.0
+    elapsed_ms = (time.perf_counter() - start) * 1000.0
 
     return SortResult(
         sorted_items=items,
         comparisons=comparisons,
-        swaps_or_shifts=swaps,
+        swaps_or_moves=swaps,
         execution_time_ms=elapsed_ms,
         algorithm="Bubble Sort",
-        criterion=criterion,
-        reverse=reverse,
     )
 
 
 def insertion_sort(
     arr: List[Any],
-    criterion: str = "marks",
-    reverse: bool = True,
+    key_func: Callable[[Any], Any] = lambda x: x,
+    reverse: bool = False,
 ) -> SortResult:
     """
     Insertion Sort Implementation.
-    Builds the sorted array one element at a time by shifting larger (or smaller)
-    elements to the right.
+    Builds sorted partition by shifting larger (or smaller) elements rightward.
 
     Time Complexity:
-      - Best: O(n) [already sorted]
-      - Worst / Average: O(n^2)
+      - Best Case: O(n) [already sorted]
+      - Worst Case: O(n^2)
+      - Average Case: O(n^2)
     Space Complexity: O(1) auxiliary
     """
     items = list(arr)
     n = len(items)
-    key_func = get_key_extractor(criterion)
     comparisons = 0
     shifts = 0
 
-    start_time = time.perf_counter()
+    start = time.perf_counter()
 
     for i in range(1, n):
         key_item = items[i]
@@ -138,86 +114,83 @@ def insertion_sort(
 
         items[j + 1] = key_item
 
-    elapsed_ms = (time.perf_counter() - start_time) * 1000.0
+    elapsed_ms = (time.perf_counter() - start) * 1000.0
 
     return SortResult(
         sorted_items=items,
         comparisons=comparisons,
-        swaps_or_shifts=shifts,
+        swaps_or_moves=shifts,
         execution_time_ms=elapsed_ms,
         algorithm="Insertion Sort",
-        criterion=criterion,
-        reverse=reverse,
     )
 
 
 def merge_sort(
     arr: List[Any],
-    criterion: str = "marks",
-    reverse: bool = True,
+    key_func: Callable[[Any], Any] = lambda x: x,
+    reverse: bool = False,
 ) -> SortResult:
     """
     Merge Sort Implementation (Divide and Conquer).
-    Recursively divides array into halves, sorts each half, and merges them.
+    Recursively bisects array, sorts sub-arrays, and merges them.
 
     Time Complexity:
-      - Best / Average / Worst: O(n log n)
+      - Best Case: O(n log n)
+      - Worst Case: O(n log n)
+      - Average Case: O(n log n)
     Space Complexity: O(n) auxiliary
     """
     items = list(arr)
-    key_func = get_key_extractor(criterion)
     comparisons = 0
     moves = 0
 
-    start_time = time.perf_counter()
+    start = time.perf_counter()
 
-    def _merge_sort_recursive(sub_arr: List[Any]) -> List[Any]:
+    def _merge_sort_rec(sub_arr: List[Any]) -> List[Any]:
         nonlocal comparisons, moves
         if len(sub_arr) <= 1:
             return sub_arr
 
         mid = len(sub_arr) // 2
-        left_sorted = _merge_sort_recursive(sub_arr[:mid])
-        right_sorted = _merge_sort_recursive(sub_arr[mid:])
+        left = _merge_sort_rec(sub_arr[:mid])
+        right = _merge_sort_rec(sub_arr[mid:])
 
         merged = []
         i = j = 0
 
-        while i < len(left_sorted) and j < len(right_sorted):
+        while i < len(left) and j < len(right):
             comparisons += 1
-            val_l = key_func(left_sorted[i])
-            val_r = key_func(right_sorted[j])
+            val_l = key_func(left[i])
+            val_r = key_func(right[j])
 
             condition = (val_l >= val_r) if reverse else (val_l <= val_r)
             if condition:
-                merged.append(left_sorted[i])
+                merged.append(left[i])
                 i += 1
             else:
-                merged.append(right_sorted[j])
+                merged.append(right[j])
                 j += 1
             moves += 1
 
-        while i < len(left_sorted):
-            merged.append(left_sorted[i])
+        while i < len(left):
+            merged.append(left[i])
             i += 1
             moves += 1
 
-        while j < len(right_sorted):
-            merged.append(right_sorted[j])
+        while j < len(right):
+            merged.append(right[j])
             j += 1
             moves += 1
 
         return merged
 
-    sorted_result = _merge_sort_recursive(items)
-    elapsed_ms = (time.perf_counter() - start_time) * 1000.0
+    sorted_res = _merge_sort_rec(items)
+    elapsed_ms = (time.perf_counter() - start) * 1000.0
 
     return SortResult(
-        sorted_items=sorted_result,
+        sorted_items=sorted_res,
         comparisons=comparisons,
-        swaps_or_shifts=moves,
+        swaps_or_moves=moves,
         execution_time_ms=elapsed_ms,
         algorithm="Merge Sort",
-        criterion=criterion,
-        reverse=reverse,
     )

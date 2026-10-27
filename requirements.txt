@@ -1,0 +1,7 @@
+# Acadence - Student Academic & Examination Assistant
+# The core application (app.py) runs on Python standard library with zero external dependencies.
+# The following optional packages are for running the Streamlit interface (streamlit_app.py):
+
+streamlit>=1.28.0
+pandas>=2.0.0
+plotly>=5.17.0

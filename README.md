@@ -1,181 +1,206 @@
-# Student Record & Examination Processing System (DSA Microproject)
+# Acadence - Student Academic & Examination Assistant
 
-A modular Python application designed for 3rd-semester Data Structures and Algorithms (DSA) coursework. It comprehensively satisfies **CO1, CO2, and CO3**, features empirical performance benchmarking, and introduces a novelty feature: the **What-If Marks Simulator & Academic Goal Planner**.
-
-## Course Outcome (CO) Mapping Matrix
-
-| Course Outcome | Focus Topic | Project Implementation | Key Operations | Time Complexity |
-| :--- | :--- | :--- | :--- | :--- |
-| **CO1** | Linear Data Structures (Stack & Queue) | • **LIFO Undo Stack**: Multi-level undo for record mutations<br>• **FIFO Examination Queue**: Exam registration, hall tickets, re-evaluations | `push`, `pop`, `peek`<br>`enqueue`, `dequeue`, `peek` | Stack: $\mathcal{O}(1)$<br>Queue: $\mathcal{O}(1)$ |
-| **CO2** | Linked List Data Structures & Sequential Search | • **Singly Linked List**: Primary record storage (`StudentNode`)<br>• **Linear Search**: Traversal on linked list to find students by ID/name<br>• **Storage Benchmark**: Comparison with Python List (Array) | Insert Head/Tail, Delete by ID, Update, Sequential Traversal | Search: $\mathcal{O}(n)$<br>Insert Head: $\mathcal{O}(1)$<br>Insert Tail: $\mathcal{O}(n)$ |
-| **CO3** | Searching & Sorting Techniques & Performance Analysis | • **Searching**: Linear Search vs. Binary Search<br>• **Sorting**: Bubble Sort, Insertion Sort, Merge Sort<br>• **Ranking**: Merit list generation (by marks, name, ID)<br>• **Empirical Benchmark**: Runtime comparison across scaling datasets | Binary Search on sorted list, Bubble/Insertion/Merge sort | Linear: $\mathcal{O}(n)$<br>Binary: $\mathcal{O}(\log n)$<br>Merge: $\mathcal{O}(n \log n)$<br>Bubble/Insert: $\mathcal{O}(n^2)$ |
-| **NOVELTY** | Academic Goal Seeking & Sensitivity Analysis | • **What-If Marks Simulator**: Performance bottleneck diagnosis, reverse sensitivity analysis to reach target percentages | Goal analysis, priority queue / headroom allocation | $\mathcal{O}(m \log m)$ for $m$ subjects |
+A comprehensive academic productivity and examination management web application built in Python. Designed to solve real student problems—eliminating missed deadlines, examination clashes, and reactive exam preparation—while implementing and evaluating 3rd-semester Data Structures and Algorithms coursework (**CO1, CO2, and CO3**).
 
 ---
 
-## System Architecture & Directory Structure
+## Problem Statement & Main Goal
+
+College students often struggle to juggle overlapping examination schedules, assignment deadlines, and vulnerable subjects. Information is typically scattered across college notices, messy spreadsheets, and chat groups, leading to cramming and preventable academic penalties.
+
+**Acadence** addresses this by providing an intelligent, centralized academic operations platform. It moves beyond standard CRUD student tracking by actively answering:
+1. **What needs attention right now?**
+2. **When does it need attention?**
+3. **What concrete action should the student take next?**
+
+The application features **Academic Rescue Mode**, an academic triage engine that evaluates urgency, priority, study effort, and subject performance vulnerability using deterministic, explainable rule-based scoring.
+
+---
+
+## Course Outcome (CO) Mapping Matrix
+
+| Course Outcome | Focus Topic | Project Implementation & File | Key Operations & DSA Complexity |
+| :--- | :--- | :--- | :--- |
+| **CO1** | Linear Data Structures (Stack & Queue) | • **Multi-Level Undo Engine** (`data_structures/stack.py`)<br>• **FIFO Academic Request Queue** (`data_structures/queue.py`) | • Stack: `push`, `pop`, `peek` in strict $\mathcal{O}(1)$ time. Reverses task mutations, status changes, and deletions.<br>• Queue: Linked-node queue with `_front` and `_rear` pointers for $\mathcal{O}(1)$ `enqueue` and `dequeue`. Compares FIFO request processing with priority task execution. |
+| **CO2** | Linked Lists & Basic Searching | • **Custom Singly Linked List** (`data_structures/linked_list.py`)<br>• **Linear Search Traversal** (`algorithms/searching.py`)<br>• **Storage Benchmark** (`services/dsa_lab.py`) | • In-memory singly linked list storing dynamic task and exam nodes (`head` pointer, node traversal).<br>• Demonstrates $\mathcal{O}(1)$ head insertion vs. $\mathcal{O}(n)$ Python array shifting.<br>• Explains why linked lists incur $\mathcal{O}(n)$ sequential search overhead. |
+| **CO3** | Searching & Sorting Performance Analysis | • **Manual Searching**: Linear Search & Binary Search (`algorithms/searching.py`)<br>• **Manual Sorting**: Bubble Sort, Insertion Sort, Merge Sort (`algorithms/sorting.py`)<br>• **Interactive DSA Lab** (`services/dsa_lab.py`) | • Binary search executes on sorted contiguous arrays in $\mathcal{O}(\log n)$ time using $\mathcal{O}(1)$ random-access middle indexing.<br>• Merge Sort ($\mathcal{O}(n \log n)$), Insertion Sort ($\mathcal{O}(n^2)$), and Bubble Sort ($\mathcal{O}(n^2)$) applied to rank tasks and sort exam schedules.<br>• Empirical benchmarks on scaling datasets ($N = 100$ to $5,000$). |
+
+---
+
+## System Architecture
 
 ```text
 DSA-MicroProj/
-├── algorithms/
-│   ├── __init__.py
-│   ├── searching.py             # Linear Search (LL & Array) and Binary Search (CO2 & CO3)
-│   └── sorting.py               # Bubble Sort, Insertion Sort, Merge Sort (CO3)
-├── structures/
+├── data_structures/
 │   ├── __init__.py
 │   ├── node.py                  # Node class with data and next pointer
-│   ├── linked_list.py           # Custom Singly Linked List (CO2)
 │   ├── stack.py                 # Custom LIFO Stack (CO1)
-│   └── queue.py                 # Custom FIFO Queue with front & rear pointers (CO1)
-├── models/
+│   ├── queue.py                 # Custom FIFO Queue with front & rear pointers (CO1)
+│   └── linked_list.py           # Custom Singly Linked List (CO2)
+├── algorithms/
 │   ├── __init__.py
-│   └── student.py               # Student dataclass with GPA, percentage, and grading
+│   ├── searching.py             # Manual Linear & Binary Search (CO2 & CO3)
+│   └── sorting.py               # Manual Bubble, Insertion, & Merge Sort (CO3)
+├── models.py                    # Structured dataclasses (Task, Exam, Assessment, UndoAction)
+├── database.py                  # Persistent SQLite layer with schema & demo seeder
 ├── services/
 │   ├── __init__.py
-│   ├── student_manager.py       # Core service linking Linked List + Undo Stack
-│   ├── exam_queue_manager.py    # Exam activities FIFO service (CO1)
-│   └── what_if_simulator.py     # Novelty: What-If Marks Simulator & Goal Planner
-├── benchmark/
-│   ├── __init__.py
-│   └── performance.py           # Empirical benchmarking suite (CO2 & CO3)
-├── data/
-│   └── sample_students.json     # Preloaded student dataset
+│   ├── priority_engine.py       # Transparent rule-based task prioritization formula
+│   ├── academic_planner.py      # Planner service with Stack Undo & daily study optimizer
+│   ├── exam_manager.py          # Exam service with schedule clash detector & countdown
+│   ├── performance_analyzer.py  # Averages, decline detector & target score calculator
+│   ├── rescue_mode.py           # Academic Rescue triage engine
+│   └── dsa_lab.py               # Empirical benchmarking suite
+├── static/
+│   ├── style.css                # Modern responsive UI styling (dark/light modes)
+│   └── app.js                   # Client-side controller & REST API connector
+├── templates/
+│   └── index.html               # Single-page application shell with collapsible sidebar
 ├── tests/
 │   ├── __init__.py
-│   └── test_dsa.py              # 100% passing unit tests
-├── web/
-│   └── index.html               # Responsive Dark-mode Web UI
-├── web_app.py                   # Zero-dependency local web server (http.server)
-├── main.py                      # Interactive ANSI-colored CLI
+│   └── test_acadence.py         # 9 automated unit test suites
+├── app.py                       # Zero-dependency full-stack server (http.server)
+├── streamlit_app.py             # Optional Streamlit interface
+├── requirements.txt             # Optional dependencies for Streamlit
 └── README.md                    # Project documentation & review guide
 ```
 
 ---
 
-## Core Data Structures & Algorithmic Analysis
+## Core Application Features
 
-### 1. Singly Linked List (`structures/linked_list.py`)
-- **Design**: Composed of individual `Node` objects containing a `Student` instance and a `next` pointer.
-- **Why used**: Demonstrates pointer manipulation and dynamic memory allocation without requiring contiguous blocks.
-- **Operations**:
-  - `insert_at_beginning(data)`: Updates head pointer in $\mathcal{O}(1)$ time.
-  - `insert_at_end(data)`: Traverses to tail in $\mathcal{O}(n)$ time (or $\mathcal{O}(1)$ with tail pointer).
-  - `delete_by_id(student_id)`: Unlinks matching node by tracking `prev.next = current.next` in $\mathcal{O}(n)$.
-  - `search_by_id(student_id)`: Sequential linear traversal checking node data.
+### 1. Unified Academic Dashboard
+- **Next Exam Countdown**: Live real-time counter displaying days, hours, and minutes to the nearest scheduled examination.
+- **Task Health Counters**: Visual metrics for Pending, In Progress, Completed, and Overdue tasks.
+- **Schedule Clash Warning**: Immediate banner alert if overlapping examination slots are detected.
+- **"What Should I Do Next?"**: Prominent, ranked list of top urgent tasks with transparent explanations detailing why each task was prioritized.
+- **Academic Rescue Overview**: Live Crisis Score indicator (0 to 100) reflecting workload pressure.
 
-### 2. Custom Stack (`structures/stack.py`)
-- **Design**: Dynamic array-backed LIFO (Last-In, First-Out) structure.
-- **Role in Project**: Powering the **Multi-level Undo Engine**.
-  - When a student is **Added**: An `ADD` action token is pushed. Undoing it deletes the newly added student.
-  - When a student is **Updated**: A snapshot of the previous record is pushed. Undoing it restores the original values.
-  - When a student is **Deleted**: The entire deleted `Student` object is pushed. Undoing it re-inserts the student.
-- **Complexity**: `push()`, `pop()`, and `peek()` all run in strict $\mathcal{O}(1)$ time.
+### 2. Smart Academic Planner
+- Add, update, delete, and filter academic tasks by subject and status.
+- **Transparent Priority Scoring**:
+  $$\text{Task Score} = \text{Urgency (hours to deadline)} + \text{Priority Weight} + \text{Subject Vulnerability Boost} + \text{Effort Factor}$$
+- **Suggested Daily Study Schedule**: Input available study hours (e.g. 3.5 hours); the planner selects the optimal set of pending tasks fitting within the budget with clear rationale.
+- **Multi-Level Undo**: Supported via a custom LIFO Stack to reverse accidental task deletions, updates, or status changes.
 
-### 3. Custom Queue (`structures/queue.py`)
-- **Design**: Implemented using linked nodes with dedicated `_front` and `_rear` pointers.
-- **Why not `list.pop(0)`?**: Standard Python `list.pop(0)` takes $\mathcal{O}(n)$ time because all remaining elements must shift left in memory. Our custom linked Queue guarantees **strict $\mathcal{O}(1)$ time** for both `enqueue()` and `dequeue()`.
-- **Role in Project**: Manages real-world examination activities (Exam Registrations, Hall Ticket Generation, Grade Re-evaluations, Supplementary Exams) on a First-Come, First-Served basis.
+### 3. Examination Management
+- Schedule exams with subject, date, time intervals, venue, revision completion progress, and syllabus.
+- **Schedule Conflict Detector**: Pairwise algorithm checking interval overlaps ($\max(s_1, s_2) < \min(e_1, e_2)$) on identical dates to prevent exam clashes.
+- **FIFO Academic Request Queue**: Linked-node queue where students submit requests (Hall tickets, Re-evaluations, Supplementary queries) processed in First-Come, First-Served order.
 
-### 4. Searching Techniques (`algorithms/searching.py`)
-- **Linear Search**: Sequentially scans elements one by one. Works on both unsorted linked lists and arrays. Time Complexity: $\mathcal{O}(n)$.
-- **Binary Search**: Uses divide-and-conquer on sorted lists. Time Complexity: $\mathcal{O}(\log n)$.
-- **Critical Technical Detail (Syllabus Note)**:
-  > *Why not Binary Search on a Linked List?*
-  > Binary search requires $\mathcal{O}(1)$ random access to the middle element (`arr[mid]`). On a singly linked list, reaching the middle requires traversing `n/2` pointers ($\mathcal{O}(n)$ steps), degrading binary search to $\mathcal{O}(n)$ or $\mathcal{O}(n \log n)$. Therefore, binary search is executed on contiguous array-backed storage for true $\mathcal{O}(\log n)$ efficiency.
+### 4. Academic Performance Analyzer
+- Records scores across Quizzes, Assignments, Mid-Terms, Practicals, and Finals.
+- **Decline Detection**: Rule-based detection that flags sudden drops ($\ge 10\%$) or consecutive downward trends.
+- **Target Score Calculator**: Reverse sensitivity calculator computing the exact marks required on future assessments to achieve a desired overall average:
+  $$\text{Required Marks} = \frac{\text{Target Average} \times W_{\text{new}} - \sum (\text{Marks}_i \times W_i)}{W_{\text{upcoming}}}$$
+  Alerts the user if the target is already secured or mathematically unattainable ($> 100\%$).
+- **Revision Priorities**: Ranks subjects for review based on lowest average and exam proximity.
 
-### 5. Sorting Techniques (`algorithms/sorting.py`)
-- **Bubble Sort ($\mathcal{O}(n^2)$)**: Adjacent element comparison with early-termination flag if no swaps occur.
-- **Insertion Sort ($\mathcal{O}(n^2)$)**: Incrementally shifts elements to insert into the sorted partition. Excellent for small or nearly-sorted datasets.
-- **Merge Sort ($\mathcal{O}(n \log n)$)**: Divide-and-conquer algorithm that recursively bisects arrays and merges sorted halves. Highly stable and consistent.
-- **Flexibility**: All algorithms support sorting by **Marks** (Merit List), **Name**, or **Student ID** in either Ascending or Descending order.
+### 5. Flagship: Academic Rescue Mode
+When facing multiple impending exams and backlog, Academic Rescue Mode calculates a **Crisis Index** (0 to 100) and executes triage:
+- Identifies overdue assignments and tight deadlines ($< 48$ hours).
+- Identifies subjects falling below the configurable warning threshold (default: $< 60\%$).
+- Generates the top recommended action items with clear rationale.
+- Features **One-Click Completion & Real-Time Recalculation** to recalculate priorities as tasks are finished.
 
----
-
-## Novelty Feature: What-If Marks Simulator
-
-The **What-If Marks Simulator** is an analytical decision-support engine for students:
-1. **Performance Diagnostics**:
-   - Identifies bottlenecks by categorizing subjects into:
-     - *Critical* ($<50\%$): Risk of failure, fundamental remediation needed.
-     - *Needs Improvement* ($50 - 69\%$): Significant gain margin.
-     - *Proficient* ($70 - 84\%$): Solid foundation.
-     - *Exemplary* ($\ge 85\%$): Mastery achieved.
-2. **Reverse Sensitivity Goal Planning**:
-   - Given a target overall percentage (e.g., $85\%$), computes the exact aggregate marks needed.
-   - **Feasibility Verification**: Detects if the goal is mathematically possible (e.g., cannot exceed $100\%$ per subject).
-   - **Smart Headroom Allocation**: Distributes needed marks using a greedy strategy prioritizing subjects with the largest gap (`100 - current_score`), maximizing return on study effort.
-3. **Hypothetical Scenario Simulator**:
-   - Evaluates "what-if" scores: *"If I score 92 in DSA and 88 in WebDev, what will my overall percentage and grade become?"*
+### 6. Interactive DSA Performance Lab
+- Allows selecting dataset sizes ($N = 100, 500, 1000, 2500, 5000$).
+- Executes manual Linear Search, Binary Search, Bubble Sort, Insertion Sort, and Merge Sort.
+- Measures empirical wall-clock time (`time.perf_counter()`), comparison counters, and swaps/moves.
+- Compares Singly Linked List $\mathcal{O}(1)$ front insertion against Python array $\mathcal{O}(n)$ memory shifting.
 
 ---
 
-## Big-O Performance Benchmarks
+## Report-Ready Complexity Reference Table
 
-### Time & Space Complexity Summary Table
-
-| Operation / Algorithm | Best Case | Average Case | Worst Case | Space Complexity |
-| :--- | :--- | :--- | :--- | :--- |
-| **Stack Push / Pop** | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ auxiliary |
-| **Queue Enqueue / Dequeue** | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ auxiliary |
-| **Linked List Insert Head** | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ auxiliary |
-| **Linked List Search** | $\mathcal{O}(1)$ | $\mathcal{O}(n)$ | $\mathcal{O}(n)$ | $\mathcal{O}(1)$ auxiliary |
-| **Linear Search** | $\mathcal{O}(1)$ | $\mathcal{O}(n)$ | $\mathcal{O}(n)$ | $\mathcal{O}(1)$ auxiliary |
-| **Binary Search** | $\mathcal{O}(1)$ | $\mathcal{O}(\log n)$ | $\mathcal{O}(\log n)$ | $\mathcal{O}(1)$ auxiliary |
-| **Bubble Sort** | $\mathcal{O}(n)$ *(optimized)* | $\mathcal{O}(n^2)$ | $\mathcal{O}(n^2)$ | $\mathcal{O}(1)$ auxiliary |
-| **Insertion Sort** | $\mathcal{O}(n)$ *(nearly sorted)* | $\mathcal{O}(n^2)$ | $\mathcal{O}(n^2)$ | $\mathcal{O}(1)$ auxiliary |
-| **Merge Sort** | $\mathcal{O}(n \log n)$ | $\mathcal{O}(n \log n)$ | $\mathcal{O}(n \log n)$ | $\mathcal{O}(n)$ auxiliary |
-
-### Empirical Findings: Singly Linked List vs. Python List (Array)
-- **Head Insertion (`index 0`)**: Singly Linked List is significantly faster ($\approx 10\times - 30\times$) than Python List because the linked list only updates two pointers, whereas the array must shift all $N$ existing elements in memory.
-- **Sequential Search**: Arrays benefit from CPU cache locality; linked lists have pointer-dereferencing overhead.
+| Data Structure / Algorithm | Best Case | Average Case | Worst Case | Space Complexity | Real-World Application in Acadence |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Custom LIFO Stack** | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ auxiliary | Multi-level Undo Engine for task mutations and deletions |
+| **Custom FIFO Queue** | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ auxiliary | Academic Service Request Queue (Hall tickets, Re-evaluations) |
+| **Singly Linked List** | $\mathcal{O}(1)$ [Head] | $\mathcal{O}(n)$ | $\mathcal{O}(n)$ | $\mathcal{O}(1)$ auxiliary | Dynamic memory storage of active study tasks and exams |
+| **Linear Search** | $\mathcal{O}(1)$ | $\mathcal{O}(n)$ | $\mathcal{O}(n)$ | $\mathcal{O}(1)$ auxiliary | Sequential scanning of unsorted tasks and linked lists |
+| **Binary Search** | $\mathcal{O}(1)$ | $\mathcal{O}(\log n)$ | $\mathcal{O}(\log n)$ | $\mathcal{O}(1)$ auxiliary | Fast lookup across pre-sorted exam dates and merit lists |
+| **Bubble Sort** | $\mathcal{O}(n)$ [flag] | $\mathcal{O}(n^2)$ | $\mathcal{O}(n^2)$ | $\mathcal{O}(1)$ auxiliary | Comparison-based sorting benchmark |
+| **Insertion Sort** | $\mathcal{O}(n)$ [sorted] | $\mathcal{O}(n^2)$ | $\mathcal{O}(n^2)$ | $\mathcal{O}(1)$ auxiliary | Fast incremental sorting for small batches of tasks |
+| **Merge Sort** | $\mathcal{O}(n \log n)$ | $\mathcal{O}(n \log n)$ | $\mathcal{O}(n \log n)$ | $\mathcal{O}(n)$ auxiliary | Divide-and-conquer sorting for exam schedules and merit rankings |
 
 ---
 
 ## How to Run the Application
 
-### 1. Terminal / CLI Interface (Interactive Menu)
+### Option 1: Full-Stack Web Application (Recommended, Zero External Dependencies)
+Runs out of the box on standard Python 3.9+ without installing any third-party packages:
 ```bash
-python3 main.py
+python3 app.py
 ```
-Provides full menu-driven navigation with ANSI formatting for:
-- CRUD operations on student records
-- Undo stack operations
-- Examination queue submissions and processing
-- Sorting merit list generator
-- What-If Marks Simulator
-- Running live Big-O benchmarks
-
-### 2. Interactive Web Dashboard (Zero External Dependencies)
-```bash
-python3 web_app.py
-```
-Then open your browser at:
+Open your browser at:
 ```text
 http://localhost:8080
 ```
-*Features interactive graphical representations of the Linked List pointer chain, Undo Stack, Exam Queue, and dynamic What-If simulator gauges.*
 
-### 3. Run Automated Unit Tests
+### Option 2: Streamlit Interface (Optional)
+If you prefer running via Streamlit:
+```bash
+pip install -r requirements.txt
+streamlit run streamlit_app.py
+```
+
+### Run Automated Unit Tests
 ```bash
 python3 -m unittest discover tests
 ```
-Runs 8 test suites covering Stack, Queue, Linked List, Undo Engine, Sorting, Searching, and the Simulator.
+Runs 9 test suites validating Stack, Queue, Linked List, Algorithms, Priority Engine, Conflict Detector, and Undo functionality.
 
 ---
 
-## Viva Voce & Review Q&A Preparation
+## Project Review & Demonstration Workflow
 
-**Q1: How is the undo feature implemented and what data structure makes it optimal?**  
-*Answer:* Undo is implemented using a custom LIFO Stack. Every time a record is added, updated, or deleted, an inverse action token (containing snapshots of prior state) is pushed onto the stack. Calling "Undo" pops the top element in $\mathcal{O}(1)$ time and applies the inverse operation. Stack is optimal because undo operations must always reverse the *most recent* action first (LIFO order).
+When presenting Acadence to professors or evaluators, use this recommended flow:
 
-**Q2: Why did you implement the queue with linked nodes instead of `list.append()` and `list.pop(0)`?**  
-*Answer:* In Python, `list.pop(0)` requires shifting all remaining elements to the left, resulting in $\mathcal{O}(n)$ time complexity per dequeue. Our custom queue uses linked nodes with separate `_front` and `_rear` pointers, ensuring both `enqueue` and `dequeue` operate in strict $\mathcal{O}(1)$ constant time.
+1. **Demonstrate the Dashboard**:
+   - Point out the **Live Countdown** to the nearest exam.
+   - Show the **Schedule Clash Alert** (demonstrating algorithmic interval collision detection).
+   - Walk through the **"What Should I Do Next?"** recommendations and explain how the transparent rule-based Priority Engine calculated the order.
 
-**Q3: Why can't we efficiently run Binary Search on a Singly Linked List?**  
-*Answer:* Binary search relies on accessing the middle element in $\mathcal{O}(1)$ time (`mid = (low + high) // 2`). In a singly linked list, accessing the $k$-th element requires sequentially traversing $k$ pointer steps from the head ($\mathcal{O}(k)$ time). This causes the recurrence relation to degrade to $\mathcal{O}(n)$ or $\mathcal{O}(n \log n)$, eliminating the logarithmic benefit. Hence, binary search is performed on contiguous array-backed storage.
+2. **Demonstrate the Smart Academic Planner (CO1 & CO2)**:
+   - Add a new task or delete an existing task.
+   - Click the **Undo** button in the top navigation bar to demonstrate the **LIFO Stack** reverting the operation in $\mathcal{O}(1)$ time.
+   - Generate a **Daily Study Schedule** for 3.5 hours to show how the system selects tasks fitting within available time.
 
-**Q4: When would Insertion Sort be preferred over Merge Sort?**  
-*Answer:* While Merge Sort has a superior worst-case time complexity ($\mathcal{O}(n \log n)$ vs $\mathcal{O}(n^2)$), Insertion Sort has very low constant factor overhead and runs in $\mathcal{O}(n)$ time on already-sorted or nearly-sorted data. Additionally, Insertion Sort is in-place ($\mathcal{O}(1)$ auxiliary space), whereas Merge Sort requires $\mathcal{O}(n)$ additional memory for temporary arrays.
+3. **Demonstrate Examinations & FIFO Queue (CO1)**:
+   - View the scheduled exams sorted using **Merge Sort**.
+   - Navigate to the **FIFO Academic Service Request Queue**: Enqueue a new request, then click "Process Next in Line" to show $\mathcal{O}(1)$ First-Come, First-Served dequeue processing.
 
-**Q5: What is the novelty of your What-If Marks Simulator?**  
-*Answer:* Most student systems are passive recording tools. The What-If Simulator provides proactive academic intelligence: it conducts reverse sensitivity analysis to calculate exactly how many marks a student must gain across specific subjects to achieve a target grade or percentage, verifying feasibility and prioritizing study effort where the improvement margin is highest.
+4. **Demonstrate Academic Performance & Target Score Calculator**:
+   - Show the subject cards and explain the **Decline Detection rule** (drop $\ge 10\%$ or negative trajectory).
+   - Open the **Target Score Calculator**: Enter a target average of $85\%$ and show how reverse sensitivity analysis calculates the exact marks required on the upcoming exam.
+
+5. **Demonstrate Flagship Feature: Academic Rescue Mode**:
+   - Show the **Crisis Index gauge** and the top triage recommendations.
+   - Click **"Mark Completed & Recalculate"** on the top recommendation to demonstrate real-time triage recalculation.
+
+6. **Demonstrate the DSA Performance Lab (CO2 & CO3)**:
+   - Select dataset size $N = 1000$.
+   - Run the **Search Benchmark** to compare Linear Search vs. Binary Search ($\mathcal{O}(n)$ vs $\mathcal{O}(\log n)$).
+   - Run the **Storage Benchmark** to show why Linked List front insertion ($\mathcal{O}(1)$ pointer updates) is significantly faster than Python array front insertion ($\mathcal{O}(n)$ memory shifting).
+
+---
+
+## Viva Voce Preparation Q&A
+
+**Q1: How does your undo mechanism work, and why is a Stack the optimal data structure?**  
+*Answer:* Undo is implemented using the Command/Snapshot pattern on a custom LIFO Stack (`data_structures/stack.py`). Whenever a task or record is created, edited, deleted, or toggled, an inverted `UndoAction` snapshot is pushed onto the stack. When the student clicks Undo, the most recent action is popped in $\mathcal{O}(1)$ time and reversed. A Stack is mathematically optimal because undo operations must always reverse the *latest* operation first (LIFO order).
+
+**Q2: Why did you build the Queue using linked nodes rather than Python's built-in `list.pop(0)`?**  
+*Answer:* In Python, `list.pop(0)` requires shifting all subsequent $N-1$ elements in memory, causing an $\mathcal{O}(n)$ performance penalty per dequeue. Our custom queue uses linked nodes with separate `_front` and `_rear` pointers, ensuring that both `enqueue()` and `dequeue()` execute in strict $\mathcal{O}(1)$ constant time.
+
+**Q3: Why can't Binary Search be applied efficiently directly on a Singly Linked List?**  
+*Answer:* Binary search requires random access to the middle element in $\mathcal{O}(1)$ time (`arr[mid]`). In a singly linked list, elements are scattered across dynamic memory and linked via pointers; accessing node $k$ requires sequentially traversing $k$ pointer steps from `head` ($\mathcal{O}(k)$ time). This degrades binary search to $\mathcal{O}(n)$ or $\mathcal{O}(n \log n)$, defeating the logarithmic advantage. Thus, binary search is executed on contiguous array-backed storage.
+
+**Q4: How does your examination schedule conflict detection work?**  
+*Answer:* The conflict detector (`services/exam_manager.py`) checks all pairs of exams on identical dates. For exams with time intervals $[s_1, e_1]$ and $[s_2, e_2]$, an overlap exists if and only if:
+$$\max(s_1, s_2) < \min(e_1, e_2)$$
+If true, the system flags the exact clashing subjects, venues, and colliding duration.
+
+**Q5: What makes Academic Rescue Mode more than a standard to-do list?**  
+*Answer:* Standard to-do lists order tasks only by manual due dates or static tags. Academic Rescue Mode is an academic triage engine: it computes a composite Rescue Score considering deadline proximity, task priority, subject vulnerability (penalty boost if student's average in that subject is $< 60\%$), and effort feasibility. It provides clear, explainable rationale for why each task is recommended first.
