@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acadence Presentation | Student Academic & Examination Assistant</title>
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --surface: #121924;
+      --surface-border: #212c3d;
+      --primary: #3b82f6;
+      --primary-light: #60a5fa;
+      --accent: #8b5cf6;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --code-bg: #070a0f;
+        --font-scale: 1.15; /* Increase this to scale everything up */
+  --base-font-size: 1rem;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    /* Top Progress Bar */
+    .progress-bar-container {
+      width: 100%;
+      height: 4px;
+      background: var(--surface-border);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 100;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--primary);
+      width: 10%;
+      transition: width 0.3s ease;
+    }
+
+    /* Presentation Viewport */
+    .deck-container {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 60px;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      max-width: 1200px;
+      height: 82vh;
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 14px;
+      padding: 48px 56px;
+      position: absolute;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      animation: fadeIn 0.25s ease forwards;
+    }
+
+    .slide.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Slide Header */
+    .slide-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary-light);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .slide-title {
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+    .slide-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--surface-border);
+      border-radius: 10px;
+      padding: 20px 24px;
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+    .card-text {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      margin-top: 8px;
+    }
+    th, td {
+      padding: 9px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--surface-border);
+    }
+    th {
+      background: var(--code-bg);
+      color: var(--primary-light);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.5px;
+    }
+    tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+    /* Code & Formulas */
+    .formula-box {
+      background: var(--code-bg);
+      border: 1px solid var(--surface-border);
+      border-left: 3px solid var(--primary);
+      padding: 12px 18px;
+      border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.85rem;
+      color: var(--primary-light);
+      margin: 12px 0;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-primary { background: rgba(59, 130, 246, 0.15); color: var(--primary-light); border: 1px solid rgba(59, 130, 246, 0.3); }
+    .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+    .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+
+    /* Bottom Control Bar */
+    .controls-bar {
+      height: 56px;
+      background: var(--surface);
+      border-top: 1px solid var(--surface-border);
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 90;
+    }
+
+    .key-hints {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      display: flex;
+      gap: 16px;
+    }
+    .kbd {
+      background: var(--code-bg);
+      border: 1px solid var(--surface-border);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    .nav-buttons {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      background: var(--surface-border);
+      border: 1px solid var(--surface-border);
+      color: var(--text);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--primary); }
+
+    .slide-counter {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      min-width: 90px;
+      text-align: center;
+    }
+
+    /* Custom Title Slide Styling */
+    .title-slide {
+      text-align: center;
+      justify-content: center;
+      align-items: center;
+    }
+    .title-slide h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+    }
+    .title-slide .tagline {
+      font-size: 1.25rem;
+      color: var(--primary-light);
+      margin-bottom: 24px;
+      max-width: 800px;
+      line-height: 1.4;
+    }
+    .title-slide .meta-box {
+      background: var(--code-bg);
+      border: 1px solid var(--surface-border);
+      padding: 16px 28px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 20px;
+      display: inline-flex;
+      gap: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Deck Viewport -->
+  <div class="deck-container">
+
+    <!-- SLIDE 1: Title Slide -->
+    <div class="slide active title-slide" id="slide-1">
+      <div class="slide-tag">Engineering Project Presentation</div>
+      <h1>Acadence</h1>
+      <p class="tagline">Student Academic & Examination Assistant</p>
+      <p style="font-size: 0.95rem; color: var(--text-muted); max-width: 650px; line-height: 1.6;">
+        A proactive academic operations platform engineered to eliminate missed deadlines, detect exam schedule clashes, and dynamically prioritize study efforts.
+      </p>
+      <div class="meta-box">
+        <div><strong>Course:</strong> Data Structures & Algorithms</div>
+        <div><strong>Core Outcomes:</strong> CO1, CO2, CO3</div>
+        <div><strong>Architecture:</strong> Python, SQLite, Full-Stack Web</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Problem Statement -->
+    <div class="slide" id="slide-2">
+      <div class="slide-tag">Slide 02 / 10 &bull; Context & Motivation</div>
+      <h2 class="slide-title">The Problem: Academic Information Chaos</h2>
+      <p class="slide-subtitle">Why traditional student management systems fail college students during crucial exam periods</p>
+
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="card" style="border-left: 3px solid var(--danger);">
+            <div class="card-title" style="color: var(--danger);">Real Student Pain Points</div>
+            <ul style="padding-left: 18px; font-size: 0.86rem; color: var(--text-muted); line-height: 1.8;">
+              <li><strong>Fragmented Schedules:</strong> Exam timetables arrive in PDF circulars, assignments in chat channels, and grades in disjointed portals.</li>
+              <li><strong>Preventable Deadlines Missed:</strong> Students lose track of submission cut-offs amid concurrent project milestones.</li>
+              <li><strong>Unchecked Schedule Clashes:</strong> Overlapping exam time slots go unnoticed until attendance day.</li>
+              <li><strong>Reactive Cramming:</strong> Students realize which subjects are below passing threshold only after finals begin.</li>
+            </ul>
+          </div>
+
+          <div class="card" style="border-left: 3px solid var(--warning);">
+            <div class="card-title" style="color: var(--warning);">The Failure of Conventional Tools</div>
+            <p class="card-text">
+              Conventional college applications are <strong>passive databases</strong>: they allow administrators to record rows, but do nothing to guide student behavior.
+            </p>
+            <p class="card-text" style="margin-top: 12px;">
+              Static to-do lists fail because they lack academic context—they cannot evaluate how an upcoming exam in a 48% average subject is far more critical than a homework task in a 90% subject.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: The Solution -->
+    <div class="slide" id="slide-3">
+      <div class="slide-tag">Slide 03 / 10 &bull; Product Vision</div>
+      <h2 class="slide-title">The Acadence Paradigm: Proactive Triage</h2>
+      <p class="slide-subtitle">Transforming student software from a static record keeper to an intelligent academic operations engine</p>
+
+      <div class="slide-body">
+        <div class="grid-3" style="margin-bottom: 20px;">
+          <div class="card" style="border-top: 3px solid var(--primary);">
+            <div class="card-title">1. What Needs Attention?</div>
+            <p class="card-text">
+              Evaluates upcoming deadlines, exam proximity, and historical grades to isolate actual academic vulnerabilities.
+            </p>
+          </div>
+          <div class="card" style="border-top: 3px solid var(--accent);">
+            <div class="card-title">2. When Does It Need It?</div>
+            <p class="card-text">
+              Real-time countdown engine, schedule collision detector, and hourly urgency scaling for tasks due in &lt; 48 hours.
+            </p>
+          </div>
+          <div class="card" style="border-top: 3px solid var(--success);">
+            <div class="card-title">3. What Action to Take?</div>
+            <p class="card-text">
+              Deterministic Priority Engine provides an unambiguous daily study schedule with plain-language rationales.
+            </p>
+          </div>
+        </div>
+
+        <div class="card" style="background: var(--code-bg);">
+          <div style="font-size: 0.88rem; font-weight: 600; color: #ffffff; margin-bottom: 6px;">Zero Opaque AI Claims: Deterministic & Explainable</div>
+          <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">
+            Every single recommendation, priority score, and study schedule in Acadence is computed using mathematically transparent formulas. Students and evaluators can verify exactly why any task has been prioritized.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Dashboard & Countdown Engine -->
+    <div class="slide" id="slide-4">
+      <div class="slide-tag">Slide 04 / 10 &bull; Core Module 1</div>
+      <h2 class="slide-title">Unified Dashboard & Examination Countdown</h2>
+      <p class="slide-subtitle">An executive single-pane cockpit providing immediate operational clarity</p>
+
+      <div class="slide-body">
+        <div class="grid-2">
+          <div>
+            <div class="card" style="margin-bottom: 14px;">
+              <div class="card-title">Live Countdown Engine</div>
+              <p class="card-text">
+                Continuously computes days, hours, and minutes to the closest scheduled examination. Escalates visual priority when an exam falls within 48 hours.
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-title">Automated Clash Alert Banner</div>
+              <p class="card-text">
+                Instantly flags any detected examination schedule collisions with exact subject names and conflicting venues.
+              </p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">"What Should I Do Next?" Recommendation</div>
+            <p class="card-text" style="margin-bottom: 12px;">
+              Prominently displayed on login: highlights the top 3 highest-impact tasks determined by the priority engine.
+            </p>
+            <div class="formula-box">
+              Example Output:<br>
+              #1. Process Scheduling Lab Report (Operating Systems)<br>
+              Rationale: Overdue by 24h &bull; Subject average vulnerable (53.5%) &bull; Exam in 8 days
+            </div>
+            <p class="card-text">
+              Includes inline one-click status resolution and global Multi-Level Undo support.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Academic Planner -->
+    <div class="slide" id="slide-5">
+      <div class="slide-tag">Slide 05 / 10 &bull; Core Module 2</div>
+      <h2 class="slide-title">Smart Academic Planner & Study Scheduler</h2>
+      <p class="slide-subtitle">Multi-factor priority ranking and greedy knapsack-style study session planning</p>
+
+      <div class="slide-body">
+        <div class="card" style="margin-bottom: 16px;">
+          <div class="card-title">Transparent Priority Scoring Formula</div>
+          <div class="formula-box">
+            Task Score = Urgency_Score + Priority_Weight + Subject_Vulnerability + Effort_Factor
+          </div>
+          <p class="card-text">
+            &bull; <strong>Urgency:</strong> Overdue (&gt; 100 pts) &bull; &lt; 24h (90-75 pts) &bull; &lt; 48h (75-60 pts) &bull; &gt; 7 days (baseline)<br>
+            &bull; <strong>Priority:</strong> Critical (40 pts), High (30 pts), Medium (20 pts), Low (10 pts)<br>
+            &bull; <strong>Subject Vulnerability:</strong> Boost of up to +35 pts if student average in that subject is below the threshold (&lt; 60%)<br>
+            &bull; <strong>Effort Factor:</strong> Quick-win boost (+15 pts) for deliverables requiring 1 to 3 hours
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Suggested Daily Study Scheduler</div>
+          <p class="card-text">
+            Students input available study hours (e.g. 3.5h). The engine greedily allocates the highest-ranked pending tasks fitting within that time budget, eliminating decision paralysis.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Examination Management & Conflict Detection -->
+    <div class="slide" id="slide-6">
+      <div class="slide-tag">Slide 06 / 10 &bull; Core Module 3</div>
+      <h2 class="slide-title">Examination Management & Collision Engine</h2>
+      <p class="slide-subtitle">Interval overlap detection and FIFO Academic Service Request Queue</p>
+
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">Algorithmic Conflict Detection</div>
+            <p class="card-text">
+              Performs pairwise interval checking for all scheduled examinations sharing an identical date.
+            </p>
+            <div class="formula-box">
+              Overlap Condition:<br>
+              max(start_1, start_2) &lt; min(end_1, end_2)
+            </div>
+            <p class="card-text">
+              If true, the system flags an immediate schedule clash with exact colliding duration, venue, and subjects.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title">FIFO Academic Request Queue (CO1)</div>
+            <p class="card-text">
+              Demonstrates First-Come, First-Served processing for administrative student requests (Hall ticket generation, grade re-evaluation, supplementary exams).
+            </p>
+            <ul style="padding-left: 18px; font-size: 0.84rem; color: var(--text-muted); line-height: 1.6; margin-top: 8px;">
+              <li>Engineered using linked nodes with front and rear pointers.</li>
+              <li>Strict O(1) enqueue and dequeue operations without array shifting.</li>
+              <li>Visual track from FRONT (Exit) to REAR (Entry).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: Performance Analyzer -->
+    <div class="slide" id="slide-7">
+      <div class="slide-tag">Slide 07 / 10 &bull; Core Module 4</div>
+      <h2 class="slide-title">Academic Performance Analyzer</h2>
+      <p class="slide-subtitle">Explainable decline detection and reverse target score calculation</p>
+
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">Explainable Decline Detection</div>
+            <p class="card-text">
+              Evaluates chronological marks across quizzes, tests, and mid-terms per subject.
+            </p>
+            <ul style="padding-left: 18px; font-size: 0.84rem; color: var(--text-muted); line-height: 1.6; margin-top: 8px;">
+              <li><strong>Sudden Drop:</strong> Flags warning if the latest score drops by &ge; 10% compared to previous assessment.</li>
+              <li><strong>Negative Trajectory:</strong> Flags warning if 3 consecutive assessments exhibit a downward trend.</li>
+              <li>Prevents surprises before final university grading.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Reverse Target Score Calculator</div>
+            <p class="card-text">
+              Given existing weighted marks, determines the exact score needed on an upcoming exam to achieve a target average.
+            </p>
+            <div class="formula-box">
+              Score_Req = [Target * W_total - Current_Weighted_Pts] / W_upcoming
+            </div>
+            <p class="card-text">
+              Validates mathematical feasibility: alerts student if target is already secured or if it exceeds the maximum possible 100% ceiling.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: Academic Rescue Mode -->
+    <div class="slide" id="slide-8">
+      <div class="slide-tag">Slide 08 / 10 &bull; Flagship Innovation</div>
+      <h2 class="slide-title">Flagship: Academic Rescue Mode</h2>
+      <p class="slide-subtitle">An automated emergency triage engine designed for high-stress finals periods</p>
+
+      <div class="slide-body">
+        <div class="grid-2" style="margin-bottom: 16px;">
+          <div class="card" style="border-left: 4px solid var(--danger);">
+            <div class="card-title" style="color: var(--danger);">Academic Crisis Index (0 to 100)</div>
+            <p class="card-text">
+              Synthesizes emergency risk metrics: overdue count, tasks due in &lt; 48 hours, subjects below threshold (&lt; 60%), and exams within 10 days.
+            </p>
+            <div style="margin-top: 10px; font-size: 0.85rem;">
+              <span class="badge badge-danger">Severe Pressure (&ge; 70)</span>
+              <span class="badge badge-warning">Moderate Warning (&ge; 40)</span>
+              <span class="badge badge-success">Stable (&lt; 40)</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Emergency Triage Scoring Formula</div>
+            <div class="formula-box" style="margin: 6px 0;">
+              Rescue Score = Urgency * 0.45 + Vulnerability * 0.35 + Priority * 0.15 + QuickWin * 0.05
+            </div>
+            <p class="card-text">
+              Heavily penalizes overdue tasks and subjects at risk of failing, while providing a slight boost to low-effort quick wins.
+            </p>
+          </div>
+        </div>
+
+        <div class="card" style="background: var(--code-bg);">
+          <div class="card-title">One-Click Resolution with Real-Time Recalculation</div>
+          <p class="card-text">
+            Students click "Mark Completed & Recalculate" on recommendation #1. The engine instantly recalculates all task scores and re-ranks remaining tasks in real time without a page refresh.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: DSA Core Architecture -->
+    <div class="slide" id="slide-9">
+      <div class="slide-tag">Slide 09 / 10 &bull; Technical Excellence</div>
+      <h2 class="slide-title">DSA-Powered Core: Course Outcome Mapping</h2>
+      <p class="slide-subtitle">Production features engineered directly with custom manual Data Structures and Algorithms</p>
+
+      <div class="slide-body">
+        <table>
+          <thead>
+            <tr>
+              <th>Course Outcome</th>
+              <th>Data Structure / Algorithm</th>
+              <th>Complexity</th>
+              <th>Real-World Role in Acadence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>CO1: Linear Structures</strong></td>
+              <td>Custom LIFO Stack (`data_structures/stack.py`)</td>
+              <td>O(1) Push / Pop / Peek</td>
+              <td>Multi-Level Undo Engine reverting task mutations and deletions</td>
+            </tr>
+            <tr>
+              <td><strong>CO1: Linear Structures</strong></td>
+              <td>Custom FIFO Queue (`data_structures/queue.py`)</td>
+              <td>O(1) Enqueue / Dequeue</td>
+              <td>Academic Service Request pipeline using front/rear linked nodes</td>
+            </tr>
+            <tr>
+              <td><strong>CO2: Linked Lists</strong></td>
+              <td>Custom Singly Linked List (`data_structures/linked_list.py`)</td>
+              <td>O(1) Head Insert &bull; O(n) Search</td>
+              <td>In-memory active task registry demonstrating dynamic node allocation</td>
+            </tr>
+            <tr>
+              <td><strong>CO3: Searching</strong></td>
+              <td>Manual Binary Search (`algorithms/searching.py`)</td>
+              <td>O(log n)</td>
+              <td>Fast lookup across pre-sorted exam dates and merit rankings</td>
+            </tr>
+            <tr>
+              <td><strong>CO3: Sorting</strong></td>
+              <td>Merge Sort, Insertion Sort, Bubble Sort</td>
+              <td>O(n log n) &bull; O(n^2)</td>
+              <td>Multi-criteria sorting for tasks, deadlines, and assessment scores</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: Performance Benchmarks & Conclusion -->
+    <div class="slide" id="slide-10">
+      <div class="slide-tag">Slide 10 / 10 &bull; Verification & Conclusion</div>
+      <h2 class="slide-title">DSA Performance Lab & Engineering Summary</h2>
+      <p class="slide-subtitle">Empirical validation on scaling datasets and why Acadence stands out as a product</p>
+
+      <div class="slide-body">
+        <div class="grid-2" style="margin-bottom: 16px;">
+          <div class="card">
+            <div class="card-title">Empirical Benchmarking (N = 100 to 5,000)</div>
+            <ul style="padding-left: 18px; font-size: 0.84rem; color: var(--text-muted); line-height: 1.7;">
+              <li><strong>Storage (CO2):</strong> Linked List head insertion is <strong>10x to 30x faster</strong> than array insertion because of O(1) pointer updates vs O(n) memory shifting.</li>
+              <li><strong>Searching (CO3):</strong> Binary Search executes in <strong>&lt; 14 comparisons</strong> at N=5000, achieving a 50x+ empirical speedup over linear traversal.</li>
+              <li><strong>Sorting (CO3):</strong> Merge Sort O(n log n) maintains predictable efficiency as N scales.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Production Quality & Portability</div>
+            <ul style="padding-left: 18px; font-size: 0.84rem; color: var(--text-muted); line-height: 1.7;">
+              <li><strong>Zero External Dependencies:</strong> Full-stack server runs on standard Python 3 (`http.server` & `sqlite3`).</li>
+              <li><strong>Automated Test Coverage:</strong> 9 unit test suites passing in 0.01s.</li>
+              <li><strong>Persistent Database:</strong> SQLite schema with one-click demo data reset.</li>
+              <li><strong>Dual Frontend:</strong> Full-Stack Web UI + Streamlit interface.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="text-align: center; background: rgba(59, 130, 246, 0.08); border-color: rgba(59, 130, 246, 0.3);">
+          <div style="font-size: 1.05rem; font-weight: 700; color: #ffffff;">Acadence: Academic Productivity Grounded in Algorithmic Rigor</div>
+          <p style="font-size: 0.84rem; color: var(--text-muted); margin-top: 4px;">Ready for project defense, live evaluation, and real-world student deployment.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Control Bar -->
+  <footer class="controls-bar">
+    <div class="key-hints">
+      <!-- <span><span class="kbd">&larr;</span> / <span class="kbd">&rarr;</span> Navigate</span>
+      <span><span class="kbd">Space</span> Next</span>
+      <span><span class="kbd">F</span> Toggle Fullscreen</span> -->
+    </div>
+
+    <div class="nav-buttons">
+      <!-- <button class="btn" onclick="prevSlide()">&larr; Prev</button> -->
+      <div class="slide-counter" id="slideCounter" >Slide 01 / 10</div>
+      <!-- <button class="btn" onclick="nextSlide()">Next &rarr;</button> -->
+      <!-- <button class="btn" id="btnFullscreen" onclick="toggleFullscreen()">Fullscreen (F)</button> -->
+    </div>
+  </footer>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 10;
+
+    function updateSlide() {
+      // Hide all slides
+      document.querySelectorAll('.slide').forEach((s, idx) => {
+        s.classList.toggle('active', idx + 1 === currentSlide);
+      });
+
+      // Update counter
+      document.getElementById('slideCounter').textContent = `Slide ${String(currentSlide).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+
+      // Update top progress bar
+      const progressPct = (currentSlide / totalSlides) * 100;
+      document.getElementById('progressBar').style.width = `${progressPct}%`;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch((err) => {
+          console.warn(`Fullscreen request failed: ${err.message}`);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    // Keyboard Navigation
+    document.addEventListener('keydown', (e) => {
+      // Toggle Fullscreen with 'f' or 'F'
+      if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+        return;
+      }
+
+      // Navigate Right / Next
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+        return;
+      }
+
+      // Navigate Left / Prev
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'Backspace') {
+        e.preventDefault();
+        prevSlide();
+        return;
+      }
+
+      // Home & End
+      if (e.key === 'Home') {
+        currentSlide = 1;
+        updateSlide();
+      } else if (e.key === 'End') {
+        currentSlide = totalSlides;
+        updateSlide();
+      }
+    });
+
+    // Initialize
+    updateSlide();
+  </script>
+</body>
+</html>
