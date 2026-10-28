@@ -165,13 +165,16 @@ class ExamManagerService:
         days = total_sec // 86400
         hours = (total_sec % 86400) // 3600
         minutes = (total_sec % 3600) // 60
+        seconds = total_sec % 60
 
         return {
             "exam": next_exam.to_dict(),
-            "target_datetime": next_dt.strftime("%Y-%m-%d %H:%M"),
+            "target_datetime": next_dt.strftime("%Y-%m-%d %H:%M:%S"),
             "days": days,
             "hours": hours,
             "minutes": minutes,
+            "seconds": seconds,
+            "total_seconds": total_sec,
             "total_hours": round(total_sec / 3600.0, 1),
             "is_imminent": total_sec < (48 * 3600),
         }

@@ -213,17 +213,56 @@ async function loadDashboard() {
 
 function renderCountdown(countdown) {
   const banner = document.getElementById("dashCountdownBanner");
+  if (state.activeTimerInterval) {
+    clearInterval(state.activeTimerInterval);
+    state.activeTimerInterval = null;
+  }
+
   if (!countdown) {
-    banner.style.display = "none";
+    if (banner) banner.style.display = "none";
     return;
   }
-  banner.style.display = "flex";
-  document.getElementById("nextExamSubject").textContent = countdown.exam.subject;
-  document.getElementById("nextExamTimeVenue").textContent = `${countdown.target_datetime} (${countdown.exam.venue})`;
 
-  document.getElementById("cdDays").textContent = String(countdown.days).padStart(2, "0");
-  document.getElementById("cdHours").textContent = String(countdown.hours).padStart(2, "0");
-  document.getElementById("cdMins").textContent = String(countdown.minutes).padStart(2, "0");
+  if (banner) banner.style.display = "flex";
+  const subEl = document.getElementById("nextExamSubject");
+  const venueEl = document.getElementById("nextExamTimeVenue");
+  if (subEl) subEl.textContent = countdown.exam.subject;
+  if (venueEl) venueEl.textContent = `${countdown.target_datetime} (${countdown.exam.venue})`;
+
+  const targetIso = countdown.target_datetime.replace(" ", "T");
+  const targetTime = new Date(targetIso).getTime();
+
+  function update() {
+    const now = Date.now();
+    let diffSec = Math.max(0, Math.floor((targetTime - now) / 1000));
+
+    const days = Math.floor(diffSec / 86400);
+    diffSec %= 86400;
+    const hours = Math.floor(diffSec / 3600);
+    diffSec %= 3600;
+    const minutes = Math.floor(diffSec / 60);
+    const seconds = diffSec % 60;
+
+    const cdDays = document.getElementById("cdDays");
+    const cdHours = document.getElementById("cdHours");
+    const cdMins = document.getElementById("cdMins");
+    const cdSecs = document.getElementById("cdSecs");
+
+    if (cdDays) cdDays.textContent = String(days).padStart(2, "0");
+    if (cdHours) cdHours.textContent = String(hours).padStart(2, "0");
+    if (cdMins) cdMins.textContent = String(minutes).padStart(2, "0");
+    if (cdSecs) cdSecs.textContent = String(seconds).padStart(2, "0");
+
+    if (diffSec === 0 && days === 0 && hours === 0 && minutes === 0 && seconds === 0) {
+      if (state.activeTimerInterval) {
+        clearInterval(state.activeTimerInterval);
+        state.activeTimerInterval = null;
+      }
+    }
+  }
+
+  update();
+  state.activeTimerInterval = setInterval(update, 1000);
 }
 
 async function quickCompleteTask(taskId) {

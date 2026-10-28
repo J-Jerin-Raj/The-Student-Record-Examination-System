@@ -621,37 +621,41 @@
       </div>
     </div>
 
-    <!-- SLIDE 10: Performance Benchmarks & Conclusion -->
+    <!-- SLIDE 10: Future Scope & Conclusion -->
     <div class="slide" id="slide-10">
-      <div class="slide-tag">Slide 10 / 10 &bull; Verification & Conclusion</div>
-      <h2 class="slide-title">DSA Performance Lab & Engineering Summary</h2>
-      <p class="slide-subtitle">Empirical validation on scaling datasets and why Acadence stands out as a product</p>
+      <div class="slide-tag">Slide 10 / 10 &bull; Roadmap & Conclusion</div>
+      <h2 class="slide-title">Future Scope & Conclusion</h2>
+      <p class="slide-subtitle">Expanding Acadence from an algorithmic microproject into an institutional student platform</p>
 
       <div class="slide-body">
         <div class="grid-2" style="margin-bottom: 16px;">
           <div class="card">
-            <div class="card-title">Empirical Benchmarking (N = 100 to 5,000)</div>
+            <div class="card-title">Institutional Integration & Scalability</div>
             <ul style="padding-left: 18px; font-size: 0.84rem; color: var(--text-muted); line-height: 1.7;">
-              <li><strong>Storage (CO2):</strong> Linked List head insertion is <strong>10x to 30x faster</strong> than array insertion because of O(1) pointer updates vs O(n) memory shifting.</li>
-              <li><strong>Searching (CO3):</strong> Binary Search executes in <strong>&lt; 14 comparisons</strong> at N=5000, achieving a 50x+ empirical speedup over linear traversal.</li>
-              <li><strong>Sorting (CO3):</strong> Merge Sort O(n log n) maintains predictable efficiency as N scales.</li>
+              <li><strong>LMS Sync (Canvas & Moodle):</strong> Automated ingestion of assignment due dates, exam schedules, and grade book entries via REST APIs.</li>
+              <li><strong>Distributed Queue Processing:</strong> Extending FIFO and priority queues to multi-node job schedulers for campus-wide study dispatch.</li>
+              <li><strong>Holistic Attendance Triage:</strong> Combining marks predictions with minimum attendance threshold warnings across subjects.</li>
             </ul>
           </div>
 
           <div class="card">
-            <div class="card-title">Production Quality & Portability</div>
+            <div class="card-title">User Experience & Real-Time Sync</div>
             <ul style="padding-left: 18px; font-size: 0.84rem; color: var(--text-muted); line-height: 1.7;">
-              <li><strong>Zero External Dependencies:</strong> Full-stack server runs on standard Python 3 (`http.server` & `sqlite3`).</li>
-              <li><strong>Automated Test Coverage:</strong> 9 unit test suites passing in 0.01s.</li>
-              <li><strong>Persistent Database:</strong> SQLite schema with one-click demo data reset.</li>
-              <li><strong>Dual Frontend:</strong> Full-Stack Web UI + Streamlit interface.</li>
+              <li><strong>Cross-Platform Mobile App:</strong> React Native / Flutter client with local offline database sync and background push alerts.</li>
+              <li><strong>Collaborative Study Circles:</strong> Peer study group queue where tasks and revision resources are balanced cooperatively.</li>
+              <li><strong>Expanded What-If Analytics:</strong> Multi-semester CGPA forecasting and degree-level graduation trajectory simulations.</li>
             </ul>
           </div>
         </div>
 
-        <div class="card" style="text-align: center; background: rgba(59, 130, 246, 0.08); border-color: rgba(59, 130, 246, 0.3);">
-          <div style="font-size: 1.05rem; font-weight: 700; color: #ffffff;">Acadence: Academic Productivity Grounded in Algorithmic Rigor</div>
-          <p style="font-size: 0.84rem; color: var(--text-muted); margin-top: 4px;">Ready for project defense, live evaluation, and real-world student deployment.</p>
+        <div class="card" style="text-align: center; background: rgba(59, 130, 246, 0.08); border-color: rgba(59, 130, 246, 0.3); padding: 22px;">
+          <div style="font-size: 1.25rem; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;">Thank You</div>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin: 6px 0 0 0;">
+            Acadence demonstrates that rigorous linear and non-linear data structures directly empower practical, student-centric academic productivity.
+          </p>
+          <div style="margin-top: 10px; font-size: 0.82rem; color: var(--primary); font-weight: 600;">
+            Open for Questions &bull; Evaluation & Discussion
+          </div>
         </div>
       </div>
     </div>
@@ -667,10 +671,10 @@
     </div>
 
     <div class="nav-buttons">
-      <!-- <button class="btn" onclick="prevSlide()">&larr; Prev</button> -->
+      <button class="btn" onclick="prevSlide()">&larr; Prev</button>
       <div class="slide-counter" id="slideCounter" >Slide 01 / 10</div>
-      <!-- <button class="btn" onclick="nextSlide()">Next &rarr;</button> -->
-      <!-- <button class="btn" id="btnFullscreen" onclick="toggleFullscreen()">Fullscreen (F)</button> -->
+      <button class="btn" onclick="nextSlide()">Next &rarr;</button>
+      <button class="btn" id="btnFullscreen" onclick="toggleFullscreen()">Fullscreen (F)</button>
     </div>
   </footer>
 

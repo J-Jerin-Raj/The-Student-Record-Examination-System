@@ -286,5 +286,20 @@ class TestPerformanceAnalyzer(unittest.TestCase):
         self.assertTrue(res["is_achievable"])
 
 
+class TestExamManager(unittest.TestCase):
+    def test_exam_countdown_with_seconds(self):
+        from services.exam_manager import ExamManagerService
+        em = ExamManagerService()
+        cd = em.get_next_exam_countdown()
+        if cd is not None:
+            self.assertIn("days", cd)
+            self.assertIn("hours", cd)
+            self.assertIn("minutes", cd)
+            self.assertIn("seconds", cd)
+            self.assertIn("total_seconds", cd)
+            self.assertGreaterEqual(cd["seconds"], 0)
+            self.assertLess(cd["seconds"], 60)
+
+
 if __name__ == "__main__":
     unittest.main()
